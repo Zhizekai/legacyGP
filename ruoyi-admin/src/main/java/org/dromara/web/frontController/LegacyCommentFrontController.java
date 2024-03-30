@@ -1,26 +1,23 @@
 package org.dromara.web.frontController;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.validate.AddGroup;
-import org.dromara.common.core.validate.EditGroup;
-import org.dromara.common.excel.utils.ExcelUtil;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
-import org.dromara.common.log.annotation.Log;
-import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
+import org.dromara.web.domain.LegacyMessage;
 import org.dromara.web.domain.bo.LegacyCommentBo;
+import org.dromara.web.domain.bo.LegacyMessageBo;
 import org.dromara.web.domain.vo.LegacyCommentVo;
 import org.dromara.web.service.ILegacyCommentService;
+import org.dromara.web.service.ILegacyMessageService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +26,7 @@ import java.util.List;
 /**
  * 评论
  *
- * @author Lion Li
+ * @author keloid
  * @date 2024-03-28
  */
 //@Validated
@@ -41,15 +38,41 @@ public class LegacyCommentFrontController extends BaseController {
 
     private final ILegacyCommentService legacyCommentService;
 
+    private final ILegacyMessageService messageService;
+
     /**
      * 查询评论列表
      */
 //    @SaCheckPermission("web:comment:list")
-    @GetMapping("/list")
-    @Operation(summary = "获取前台评论列表")
+    @GetMapping("/getArticleList")
+    @Operation(summary = "获取前台所有评论列表")
     @SaIgnore
     public TableDataInfo<LegacyCommentVo> list(LegacyCommentBo bo, PageQuery pageQuery) {
         return legacyCommentService.queryPageList(bo, pageQuery);
+    }
+
+    @GetMapping("/list/{sourceId}")
+    @Operation(summary = "获取前台某个文章的评论列表")
+    @SaIgnore
+    public TableDataInfo<LegacyCommentVo> getCommentsByArticleId(
+        @NotEmpty(message = "文章id不能为空") @PathVariable Long sourceId , PageQuery pageQuery) {
+
+        LegacyCommentBo legacyCommentBo = new LegacyCommentBo();
+        legacyCommentBo.setSourceId(sourceId);
+        return legacyCommentService.queryPageList(legacyCommentBo, pageQuery);
+
+    }
+
+
+    @GetMapping("/myList")
+    @Operation(summary = "获取我的的评论列表")
+    @SaIgnore
+    public TableDataInfo<LegacyCommentVo> getCommentsByUserId(Long userId, PageQuery pageQuery) {
+
+        LegacyCommentBo legacyCommentBo = new LegacyCommentBo();
+        legacyCommentBo.setTargetUser(userId);
+        return legacyCommentService.queryPageList(legacyCommentBo, pageQuery);
+
     }
 
     /**
@@ -61,7 +84,7 @@ public class LegacyCommentFrontController extends BaseController {
     @GetMapping("/{id}")
     @Operation(summary = "获取前台评论详细信息")
     public R<LegacyCommentVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long id) {
+                                      @PathVariable Long id) {
         return R.ok(legacyCommentService.queryById(id));
     }
 
@@ -71,10 +94,22 @@ public class LegacyCommentFrontController extends BaseController {
 //    @SaCheckPermission("web:comment:add")
 //    @Log(title = "评论", businessType = BusinessType.INSERT)
     @RepeatSubmit()
-    @PostMapping()
+    @PostMapping("/create")
     @Operation(summary = "新增前台评论")
     public R<Void> add(@Validated(AddGroup.class) @RequestBody LegacyCommentBo bo) {
-        return toAjax(legacyCommentService.insertByBo(bo));
+
+        Boolean aBoolean = legacyCommentService.insertByBo(bo);
+        if (aBoolean) {
+            LegacyMessageBo legacyMessageBo = new LegacyMessageBo();
+            legacyMessageBo.setSourceId(bo.getId());
+            legacyMessageBo.setType(1);
+            legacyMessageBo.setUserId(bo.getTargetUser());
+
+            return toAjax(messageService.insertByBo(legacyMessageBo));
+
+        }else {
+            return toAjax(false);
+        }
     }
 
     /**
@@ -96,9 +131,9 @@ public class LegacyCommentFrontController extends BaseController {
      */
 //    @SaCheckPermission("web:comment:remove")
 //    @Log(title = "评论", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{ids}")
-    public R<Void> remove(@NotEmpty(message = "主键不能为空")
-                          @PathVariable Long[] ids) {
+    @DeleteMapping("/remove/{ids}")
+    @SaIgnore
+    public R<Void> remove(@NotEmpty(message = "主键不能为空") @PathVariable Long[] ids) {
         return toAjax(legacyCommentService.deleteWithValidByIds(List.of(ids), true));
     }
 }

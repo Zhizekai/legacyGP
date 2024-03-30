@@ -1,5 +1,6 @@
 package org.dromara.web.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import org.dromara.web.domain.LegacyMessage;
 import org.dromara.web.domain.vo.LegacyMessageVo;
 import org.dromara.web.domain.bo.LegacyMessageBo;
@@ -8,6 +9,7 @@ import org.dromara.common.mybatis.core.page.PageQuery;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 消息Service接口
@@ -27,6 +29,10 @@ public interface ILegacyMessageService {
      */
     TableDataInfo<LegacyMessageVo> queryPageList(LegacyMessageBo bo, PageQuery pageQuery);
 
+
+
+    // 查询消息数量
+    Map<String,Long> countMessage(Long userId);
     /**
      * 查询消息列表
      */

@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.domain.R;
+import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.excel.utils.ExcelUtil;
@@ -35,7 +36,7 @@ import java.util.List;
 //@Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/web/article")
+@RequestMapping("/v1/web/arts")
 @Tag(name = "前台文章模块")
 public class LegacyArticleFrontController extends BaseController {
 
@@ -54,23 +55,14 @@ public class LegacyArticleFrontController extends BaseController {
     }
 
     /**
-     * 导出文章列表
-     */
-//    @SaCheckPermission("system:article:export")
-//    @Log(title = "文章", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(LegacyArticleBo bo, HttpServletResponse response) {
-        List<LegacyArticleVo> list = legacyArticleService.queryList(bo);
-        ExcelUtil.exportExcel(list, "文章", LegacyArticleVo.class, response);
-    }
-
-    /**
      * 获取文章详细信息
      *
      * @param id 主键
      */
 //    @SaCheckPermission("system:article:query")
-    @GetMapping("/{id}")
+    @GetMapping("/detail/{id}")
+    @Operation(summary = "获取前台文章详细信息")
+    @SaIgnore
     public R<LegacyArticleVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long id) {
         return R.ok(legacyArticleService.queryById(id));
@@ -82,19 +74,45 @@ public class LegacyArticleFrontController extends BaseController {
 //    @SaCheckPermission("system:article:add")
 //    @Log(title = "文章", businessType = BusinessType.INSERT)
     @RepeatSubmit()
-    @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody LegacyArticleBo bo) {
+    @PostMapping("/create")
+    @Operation(summary = "新增前台文章")
+    @SaIgnore
+    public R<Void> add(@RequestBody LegacyArticleBo bo) {
         return toAjax(legacyArticleService.insertByBo(bo));
     }
 
-    /**
-     * 修改文章
-     */
+
+    // 发布文章
+    @PostMapping("/publish/{id}")
+    @Operation(summary = "发布前台文章")
+    @SaIgnore
+    public R<String> publishArticle(@PathVariable Long id, Long author) {
+        LegacyArticleVo legacyArticleVo = legacyArticleService.queryById(id);
+        legacyArticleVo.setStatus(1);
+        legacyArticleVo.setAuthor(author);
+        LegacyArticleBo legacyArticleBo = MapstructUtils.convert(legacyArticleVo, LegacyArticleBo.class);
+        if (legacyArticleService.updateByBo(legacyArticleBo)) {
+            return R.ok("发布成功");
+        }else {
+            return R.fail("文档没找到，发布失败");
+        }
+    }
+    // 修改文章
 //    @SaCheckPermission("system:article:edit")
 //    @Log(title = "文章", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
-    @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody LegacyArticleBo bo) {
+    @PutMapping("/update/{id}")
+    @Operation(summary = "修改前台文章")
+    @SaIgnore
+    public R<Void> edit(@PathVariable Long id, @RequestBody LegacyArticleBo bo) {
+        // 防止修改除了allow_keys 以外的其他属性。这个可以之后先转成json，在json里删除之后再变成对象
+//        let allow_keys = ['title', 'intro', 'content', 'category', 'tags']
+//        Object.keys(body).forEach(key => {
+//        if (!allow_keys.includes(key)) {
+//            delete body[key]
+//         }
+//        })
+        bo.setId(id);
         return toAjax(legacyArticleService.updateByBo(bo));
     }
 
@@ -105,7 +123,9 @@ public class LegacyArticleFrontController extends BaseController {
      */
 //    @SaCheckPermission("system:article:remove")
 //    @Log(title = "文章", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{ids}")
+    @DeleteMapping("/remove/{ids}")
+    @Operation(summary = "删除前台文章")
+    @SaIgnore
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {
         return toAjax(legacyArticleService.deleteWithValidByIds(List.of(ids), true));

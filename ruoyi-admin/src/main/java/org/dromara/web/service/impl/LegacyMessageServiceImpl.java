@@ -1,5 +1,6 @@
 package org.dromara.web.service.impl;
 
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -15,6 +16,7 @@ import org.dromara.web.domain.LegacyMessage;
 import org.dromara.web.mapper.LegacyMessageMapper;
 import org.dromara.web.service.ILegacyMessageService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
@@ -68,6 +70,36 @@ public class LegacyMessageServiceImpl implements ILegacyMessageService {
         lqw.eq(bo.getCreateDate() != null, LegacyMessage::getCreateDate, bo.getCreateDate());
         lqw.eq(bo.getModifiedDate() != null, LegacyMessage::getModifiedDate, bo.getModifiedDate());
         return lqw;
+    }
+
+
+    @Override
+    // 统计消息
+    public Map<String,Long> countMessage(Long userId) {
+
+        // 我怀疑Wrappers也是框架作者从mp核心代码中拿出来的，这个玩意mp对外api也没有写
+        LambdaQueryWrapper<LegacyMessage> lqw1 = Wrappers.lambdaQuery();
+        lqw1.eq(userId != null, LegacyMessage::getUserId, userId);
+        lqw1.eq(userId != null, LegacyMessage::getStatus, 1); // 评论数
+        Long commentCount = baseMapper.selectCount(lqw1);
+
+        LambdaQueryWrapper<LegacyMessage> lqw2 = Wrappers.lambdaQuery();
+        lqw2.eq(userId != null, LegacyMessage::getUserId, userId);
+        lqw2.eq(userId != null, LegacyMessage::getStatus, 2); // 点赞数
+        Long praiseCount = baseMapper.selectCount(lqw2);
+
+        LambdaQueryWrapper<LegacyMessage> lqw3 = Wrappers.lambdaQuery();
+        lqw3.eq(userId != null, LegacyMessage::getUserId, userId);
+        lqw3.eq(userId != null, LegacyMessage::getStatus, 3); // follow数
+        Long followCount = baseMapper.selectCount(lqw2);
+
+
+        Map<String, Long> map = new HashMap<String, Long>();
+        map.put("comment", commentCount);
+        map.put("praise", commentCount);
+        map.put("total", commentCount);
+
+        return map;
     }
 
     /**

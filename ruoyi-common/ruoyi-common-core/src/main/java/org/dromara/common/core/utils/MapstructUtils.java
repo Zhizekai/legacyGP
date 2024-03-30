@@ -24,6 +24,7 @@ public class MapstructUtils {
 
     /**
      * 将 T 类型对象，转换为 desc 类型的对象并返回
+     * 这个是基于converter的封装，这个api本身没有对外使用，一般都是用注解形式的
      *
      * @param source 数据来源实体
      * @param desc   描述对象 转换后的对象

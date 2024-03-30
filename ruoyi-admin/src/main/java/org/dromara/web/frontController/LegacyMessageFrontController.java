@@ -25,6 +25,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 通知消息模块，包括点赞，收藏，新增粉丝等各种消息。也就是站内消息
@@ -32,7 +33,7 @@ import java.util.List;
  * @author Lion Li
  * @date 2024-03-28
  */
-//@Validated
+@SaIgnore
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/web/message")
@@ -42,15 +43,21 @@ public class LegacyMessageFrontController extends BaseController {
     private final ILegacyMessageService legacyMessageService;
 
     // 查询消息列表
-    @SaIgnore
+
     @GetMapping("/list")
     @Operation(summary = "获取前台站内消息列表")
     public TableDataInfo<LegacyMessageVo> list(LegacyMessageBo bo, PageQuery pageQuery) {
         return legacyMessageService.queryPageList(bo, pageQuery);
     }
+    @GetMapping("/preview")
+    @Operation(summary = "统计前台用户的消息数量")
+    public R<Map<String,Long>> countMessage(Long userId) {
+        LegacyMessageBo legacyMessageBo = new LegacyMessageBo();
+        legacyMessageBo.setUserId(userId);
+        return R.ok(legacyMessageService.countMessage(userId));
+    }
 
     // 获取消息详细信息
-    @SaIgnore
     @GetMapping("/{id}")
     @Operation(summary = "根据id获取前台站内消息列表")
     public R<LegacyMessageVo> getInfo(@NotNull(message = "主键不能为空")
@@ -59,18 +66,14 @@ public class LegacyMessageFrontController extends BaseController {
     }
 
     // 新增消息
-    @SaIgnore
-//    @Log(title = "消息", businessType = BusinessType.INSERT)
     @RepeatSubmit()
-    @PostMapping("/addMessage")
-    @Operation(summary = "添加前台站内消息")
+    @PostMapping("/create")
+    @Operation(summary = "创建前台站内消息")
     public R<Void> add(@Validated(AddGroup.class) @RequestBody LegacyMessageBo bo) {
         return toAjax(legacyMessageService.insertByBo(bo));
     }
 
     // 修改消息
-    @SaIgnore
-//    @Log(title = "消息", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PostMapping("/editMessage")
     @Operation(summary = "修改前台站内消息")
@@ -79,8 +82,6 @@ public class LegacyMessageFrontController extends BaseController {
     }
 
     // 删除消息
-    @SaIgnore
-//    @Log(title = "消息", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除前台站内消息")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")

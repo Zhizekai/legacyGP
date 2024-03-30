@@ -2,6 +2,7 @@ package org.dromara.web.controller;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
@@ -32,6 +33,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/web/shortmsg")
+@Tag(name = "后台短消息管理模块")
 public class LegacyShortmsgController extends BaseController {
 
     private final ILegacyShortmsgService legacyShortmsgService;
