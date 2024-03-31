@@ -1,5 +1,6 @@
 package org.dromara.web.service.impl;
 
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -8,6 +9,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.web.domain.LegacyUser;
+import org.dromara.web.domain.bo.LegacyUserBo;
 import org.springframework.stereotype.Service;
 import org.dromara.web.domain.bo.LegacyArticleBo;
 import org.dromara.web.domain.vo.LegacyArticleVo;
@@ -31,12 +34,16 @@ public class LegacyArticleServiceImpl implements ILegacyArticleService {
 
     private final LegacyArticleMapper baseMapper;
 
-    /**
-     * 查询文章
-     */
+    // 获取文章详细信息
     @Override
     public LegacyArticleVo queryById(Long id){
-        return baseMapper.selectVoById(id);
+        // 文章要和作者进行关联
+        MPJLambdaWrapper<LegacyArticle> mpjLambdaWrapper = new MPJLambdaWrapper<>();
+        mpjLambdaWrapper
+            .selectAll(LegacyArticle.class)
+            .selectAssociation(LegacyUser.class, LegacyArticleVo::getUser)
+            .leftJoin(LegacyUser.class, LegacyUser::getId, LegacyArticle::getAuthor);
+        return baseMapper.selectJoinOne(LegacyArticleVo.class, mpjLambdaWrapper);
     }
 
     /**

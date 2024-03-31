@@ -50,7 +50,6 @@ public class LegacyArticleFrontController extends BaseController {
     @Operation(summary = "获取前台文章列表")
     @SaIgnore
     public TableDataInfo<LegacyArticleVo> list(LegacyArticleBo bo, PageQuery pageQuery) {
-        System.out.println(bo.toString());
         return legacyArticleService.queryPageList(bo, pageQuery);
     }
 

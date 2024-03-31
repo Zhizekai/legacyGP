@@ -2,6 +2,7 @@ package org.dromara.web.domain.vo;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.dromara.web.domain.LegacyArticle;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -9,6 +10,7 @@ import org.dromara.common.excel.annotation.ExcelDictFormat;
 import org.dromara.common.excel.convert.ExcelDictConvert;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
+import org.dromara.web.domain.LegacyUser;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -78,6 +80,9 @@ public class LegacyArticleVo implements Serializable {
      */
     @ExcelProperty(value = "作者id")
     private Long author;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private LegacyUser user;
 
     /**
      * 创建时间

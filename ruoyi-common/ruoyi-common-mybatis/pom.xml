@@ -48,6 +48,13 @@
             </exclusions>
         </dependency>
 
+
+        <dependency>
+            <groupId>com.github.yulichang</groupId>
+            <artifactId>mybatis-plus-join-boot-starter</artifactId>
+            <version>1.4.11</version>
+        </dependency>
+
         <!-- sql性能分析插件 -->
         <dependency>
             <groupId>p6spy</groupId>
