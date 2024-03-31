@@ -25,6 +25,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 用户
@@ -32,7 +33,7 @@ import java.util.List;
  * @author Lion Li
  * @date 2024-03-28
  */
-//@Validated
+@SaIgnore
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/web/user")
@@ -44,7 +45,7 @@ public class LegacyUserFrontController extends BaseController {
     /**
      * 查询用户列表
      */
-    @SaIgnore
+
     @GetMapping("/list")
     @Operation(summary = "获取前台用户列表")
     public TableDataInfo<LegacyUserVo> list(LegacyUserBo bo, PageQuery pageQuery) {
@@ -56,32 +57,56 @@ public class LegacyUserFrontController extends BaseController {
      *
      * @param id 主键
      */
-    @SaIgnore
-    @GetMapping("/{id}")
+    @GetMapping("/info/{id}")
     @Operation(summary = "获取前台用户详情信息")
-    public R<LegacyUserVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long id) {
+    public R<LegacyUserVo> getInfo(@NotNull(message = "主键不能为空") @PathVariable Long id) {
+
+        // TODO 根据token获取用户id
         return R.ok(legacyUserService.queryById(id));
     }
 
     /**
      * 新增用户
      */
-    @SaIgnore
+
     @RepeatSubmit()
-    @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody LegacyUserBo bo) {
+    @PostMapping("/create")
+    @Operation(summary = "用户注册")
+    public R<Void> add( @RequestBody LegacyUserBo bo) {
         return toAjax(legacyUserService.insertByBo(bo));
     }
 
+
+
+    @PostMapping("/login")
+    @Operation(summary = "用户登录")
+    public R<LegacyUserVo> frontLogin(@RequestBody LegacyUserBo bo) {
+
+        LegacyUserBo legacyUserBo = new LegacyUserBo();
+        legacyUserBo.setUsername(bo.getUsername());
+
+        List<LegacyUserVo> legacyUserVos = legacyUserService.queryList(legacyUserBo);
+        String username = legacyUserVos.get(0).getUsername();
+        String password = legacyUserVos.get(0).getPassword();
+        if (username == null) {
+            return R.fail("请先注册");
+        }else {
+            if (Objects.equals(password, bo.getPassword())) {
+                return R.ok(legacyUserVos.get(0));
+            }else {
+                return R.fail("请检查用户名和密码");
+            }
+        }
+    }
+
     /**
-     * 修改用户
+     * 修改用户信息
      */
-    @SaCheckPermission("web:user:edit")
-    @Log(title = "用户", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
-    @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody LegacyUserBo bo) {
+    @PutMapping("/update/{id}")
+    public R<Void> edit(@PathVariable Long id, @RequestBody LegacyUserBo bo) {
+
+        bo.setId(id);
         return toAjax(legacyUserService.updateByBo(bo));
     }
 
@@ -90,8 +115,6 @@ public class LegacyUserFrontController extends BaseController {
      *
      * @param ids 主键串
      */
-    @SaCheckPermission("web:user:remove")
-    @Log(title = "用户", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {

@@ -26,25 +26,27 @@ import java.util.List;
  * @author Lion Li
  * @date 2024-03-28
  */
-//@Validated
+@SaIgnore
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/web/shortMsg")
-@Tag(name = "前台短消息模块")
+@Tag(name = "前台短消息沸点模块")
 public class LegacyShortMsgFrontController extends BaseController {
 
     private final ILegacyShortmsgService legacyShortMsgService;
 
     // 查询短消息列表
-    @SaIgnore
-    @GetMapping("/list")
+
+    @GetMapping("/lists")
     public TableDataInfo<LegacyShortmsgVo> list(LegacyShortmsgBo bo, PageQuery pageQuery) {
+
+        // 这里建议前端直接把userId 放到createdBy里面
         return legacyShortMsgService.queryPageList(bo, pageQuery);
     }
 
 
     // 获取短消息详细信息
-    @SaIgnore
+
     @GetMapping("/{id}")
     public R<LegacyShortmsgVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long id) {
@@ -52,16 +54,16 @@ public class LegacyShortMsgFrontController extends BaseController {
     }
 
     // 新增短消息
-    @SaIgnore
 //    @Log(title = "短消息", businessType = BusinessType.INSERT)
     @RepeatSubmit()
-    @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody LegacyShortmsgBo bo) {
+    @PostMapping("/create")
+    public R<Void> add(@RequestBody LegacyShortmsgBo bo) {
+
+        // 这里建议前端直接把userId 放到createdBy里面
         return toAjax(legacyShortMsgService.insertByBo(bo));
     }
 
     // 修改短消息
-    @SaIgnore
 //    @Log(title = "短消息", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -70,9 +72,8 @@ public class LegacyShortMsgFrontController extends BaseController {
     }
 
     // 删除短消息
-    @SaIgnore
 //    @Log(title = "短消息", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{ids}")
+    @DeleteMapping("/remove/{ids}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {
         return toAjax(legacyShortMsgService.deleteWithValidByIds(List.of(ids), true));
