@@ -27,7 +27,7 @@ public class LegacyUser extends FrontBaseEntity {
     /**
      * 用户id
      */
-    @TableId(value = "id")
+    @TableId(value = "id",type = IdType.AUTO)
     private Long id;
 
     /**
@@ -53,7 +53,7 @@ public class LegacyUser extends FrontBaseEntity {
     /**
      * 介绍信息
      */
-    private String introduc;
+    private String introduction;
 
     /**
      * 位置信息

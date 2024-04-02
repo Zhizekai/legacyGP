@@ -2,6 +2,8 @@ package org.dromara.web.frontController;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.dev33.satoken.stp.SaTokenInfo;
+import cn.dev33.satoken.stp.StpUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,7 +38,7 @@ import java.util.Objects;
 @SaIgnore
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/web/user")
+@RequestMapping("/v1/web/users")
 @Tag(name = "前台用户模块")
 public class LegacyUserFrontController extends BaseController {
 
@@ -72,10 +74,9 @@ public class LegacyUserFrontController extends BaseController {
     @RepeatSubmit()
     @PostMapping("/create")
     @Operation(summary = "用户注册")
-    public R<Void> add( @RequestBody LegacyUserBo bo) {
+    public R<Void> add(@RequestBody LegacyUserBo bo) {
         return toAjax(legacyUserService.insertByBo(bo));
     }
-
 
 
     @PostMapping("/login")
@@ -83,20 +84,26 @@ public class LegacyUserFrontController extends BaseController {
     public R<LegacyUserVo> frontLogin(@RequestBody LegacyUserBo bo) {
 
         LegacyUserBo legacyUserBo = new LegacyUserBo();
-        legacyUserBo.setUsername(bo.getUsername());
+        legacyUserBo.setPhone(bo.getPhone());
 
         List<LegacyUserVo> legacyUserVos = legacyUserService.queryList(legacyUserBo);
-        String username = legacyUserVos.get(0).getUsername();
-        String password = legacyUserVos.get(0).getPassword();
-        if (username == null) {
-            return R.fail("请先注册");
-        }else {
+        if (legacyUserVos.size() != 0) {
+            String password = legacyUserVos.get(0).getPassword();
             if (Objects.equals(password, bo.getPassword())) {
-                return R.ok(legacyUserVos.get(0));
-            }else {
-                return R.fail("请检查用户名和密码");
+                LegacyUserVo legacyUserVo = legacyUserVos.get(0);
+                //  使用sa-token生成token
+                StpUtil.login(legacyUserVo.getId());
+                SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+                legacyUserVo.setToken(tokenInfo.getTokenValue());
+                return R.ok(legacyUserVo);
+            } else {
+                return R.fail(20001,"请检查用户名和密码");
             }
+        } else {
+            return R.fail(20002, "请先注册");
         }
+
+
     }
 
     /**

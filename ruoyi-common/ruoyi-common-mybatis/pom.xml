@@ -48,7 +48,7 @@
             </exclusions>
         </dependency>
 
-
+        <!-- mybatis plus join 插件-->
         <dependency>
             <groupId>com.github.yulichang</groupId>
             <artifactId>mybatis-plus-join-boot-starter</artifactId>

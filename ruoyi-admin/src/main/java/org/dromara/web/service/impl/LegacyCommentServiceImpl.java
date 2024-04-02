@@ -1,5 +1,6 @@
 package org.dromara.web.service.impl;
 
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -8,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.web.domain.LegacyUser;
 import org.springframework.stereotype.Service;
 import org.dromara.web.domain.bo.LegacyCommentBo;
 import org.dromara.web.domain.vo.LegacyCommentVo;
@@ -44,8 +46,11 @@ public class LegacyCommentServiceImpl implements ILegacyCommentService {
      */
     @Override
     public TableDataInfo<LegacyCommentVo> queryPageList(LegacyCommentBo bo, PageQuery pageQuery) {
-        LambdaQueryWrapper<LegacyComment> lqw = buildQueryWrapper(bo);
-        Page<LegacyCommentVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        MPJLambdaWrapper<LegacyComment> lqw = buildQueryWrapper(bo);
+        lqw.selectAll(LegacyComment.class)
+            .selectAssociation(LegacyUser.class, LegacyCommentVo::getLegacyUser)
+            .leftJoin(LegacyUser.class, LegacyUser::getId, LegacyComment::getSourceId);
+        Page<LegacyCommentVo> result = baseMapper.selectJoinPage( pageQuery.build(), LegacyCommentVo.class,lqw);
         return TableDataInfo.build(result);
     }
 
@@ -54,13 +59,13 @@ public class LegacyCommentServiceImpl implements ILegacyCommentService {
      */
     @Override
     public List<LegacyCommentVo> queryList(LegacyCommentBo bo) {
-        LambdaQueryWrapper<LegacyComment> lqw = buildQueryWrapper(bo);
+        MPJLambdaWrapper<LegacyComment> lqw = buildQueryWrapper(bo);
         return baseMapper.selectVoList(lqw);
     }
 
-    private LambdaQueryWrapper<LegacyComment> buildQueryWrapper(LegacyCommentBo bo) {
+    private MPJLambdaWrapper<LegacyComment> buildQueryWrapper(LegacyCommentBo bo) {
         Map<String, Object> params = bo.getParams();
-        LambdaQueryWrapper<LegacyComment> lqw = Wrappers.lambdaQuery();
+        MPJLambdaWrapper<LegacyComment> lqw = new MPJLambdaWrapper<>();
         lqw.eq(bo.getSourceId() != null, LegacyComment::getSourceId, bo.getSourceId());
         lqw.eq(bo.getSourceType() != null, LegacyComment::getSourceType, bo.getSourceType());
         lqw.eq(StringUtils.isNotBlank(bo.getType()), LegacyComment::getType, bo.getType());

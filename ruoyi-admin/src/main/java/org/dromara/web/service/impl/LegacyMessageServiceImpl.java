@@ -79,25 +79,27 @@ public class LegacyMessageServiceImpl implements ILegacyMessageService {
 
         // 我怀疑Wrappers也是框架作者从mp核心代码中拿出来的，这个玩意mp对外api也没有写
         LambdaQueryWrapper<LegacyMessage> lqw1 = Wrappers.lambdaQuery();
+        System.out.println(userId);
         lqw1.eq(userId != null, LegacyMessage::getUserId, userId);
         lqw1.eq(userId != null, LegacyMessage::getStatus, 1); // 评论数
         Long commentCount = baseMapper.selectCount(lqw1);
+        System.out.println(commentCount);
 
         LambdaQueryWrapper<LegacyMessage> lqw2 = Wrappers.lambdaQuery();
         lqw2.eq(userId != null, LegacyMessage::getUserId, userId);
         lqw2.eq(userId != null, LegacyMessage::getStatus, 2); // 点赞数
         Long praiseCount = baseMapper.selectCount(lqw2);
-
+        System.out.println(praiseCount);
         LambdaQueryWrapper<LegacyMessage> lqw3 = Wrappers.lambdaQuery();
         lqw3.eq(userId != null, LegacyMessage::getUserId, userId);
         lqw3.eq(userId != null, LegacyMessage::getStatus, 3); // follow数
         Long followCount = baseMapper.selectCount(lqw2);
-
+        System.out.println(followCount);
 
         Map<String, Long> map = new HashMap<String, Long>();
         map.put("comment", commentCount);
-        map.put("praise", commentCount);
-        map.put("total", commentCount);
+        map.put("praise", praiseCount);
+        map.put("total", followCount);
 
         return map;
     }

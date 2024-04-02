@@ -2,6 +2,8 @@ package org.dromara.web.frontController;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.dev33.satoken.stp.SaTokenInfo;
+import cn.dev33.satoken.stp.StpUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 通知消息模块，包括点赞，收藏，新增粉丝等各种消息。也就是站内消息
@@ -36,7 +39,7 @@ import java.util.Map;
 @SaIgnore
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/web/message")
+@RequestMapping("/v1/web/messages")
 @Tag(name = "前台用户站内消息模块")
 public class LegacyMessageFrontController extends BaseController {
 
@@ -52,9 +55,8 @@ public class LegacyMessageFrontController extends BaseController {
     @GetMapping("/preview")
     @Operation(summary = "统计前台用户的消息数量")
     public R<Map<String,Long>> countMessage(Long userId) {
-        LegacyMessageBo legacyMessageBo = new LegacyMessageBo();
-        legacyMessageBo.setUserId(userId);
-        return R.ok(legacyMessageService.countMessage(userId));
+        Long userIdByToken = StpUtil.getLoginIdAsLong();
+        return R.ok(legacyMessageService.countMessage(Objects.requireNonNullElse(userId, userIdByToken)));
     }
 
     // 获取消息详细信息

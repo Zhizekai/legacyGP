@@ -65,7 +65,6 @@ public class LegacyUserServiceImpl implements ILegacyUserService {
         lqw.like(StringUtils.isNotBlank(bo.getUsername()), LegacyUser::getUsername, bo.getUsername());
         lqw.eq(StringUtils.isNotBlank(bo.getPassword()), LegacyUser::getPassword, bo.getPassword());
         lqw.eq(StringUtils.isNotBlank(bo.getAvatar()), LegacyUser::getAvatar, bo.getAvatar());
-        lqw.eq(StringUtils.isNotBlank(bo.getIntroduc()), LegacyUser::getIntroduc, bo.getIntroduc());
         lqw.eq(StringUtils.isNotBlank(bo.getPosition()), LegacyUser::getPosition, bo.getPosition());
         lqw.eq(StringUtils.isNotBlank(bo.getCompany()), LegacyUser::getCompany, bo.getCompany());
         lqw.eq(StringUtils.isNotBlank(bo.getJuePower()), LegacyUser::getJuePower, bo.getJuePower());

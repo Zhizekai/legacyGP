@@ -2,6 +2,7 @@ package org.dromara.web.frontController;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -16,6 +17,7 @@ import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
+import org.dromara.web.domain.LegacyFollow;
 import org.dromara.web.domain.bo.LegacyFollowBo;
 import org.dromara.web.domain.vo.LegacyFollowVo;
 import org.dromara.web.service.ILegacyFollowService;
@@ -33,7 +35,8 @@ import java.util.List;
 @SaIgnore
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/web/follow")
+@RequestMapping("/v1/web/follows")
+@Tag(name = "前台用户关注模块")
 public class LegacyFollowFrontController extends BaseController {
 
     private final ILegacyFollowService legacyFollowService;
@@ -46,16 +49,17 @@ public class LegacyFollowFrontController extends BaseController {
         return legacyFollowService.queryPageList(bo, pageQuery);
     }
 
-    /**
-     * 导出关注列表
-     */
 
-    @PostMapping("/export")
-    public void export(LegacyFollowBo bo, HttpServletResponse response) {
-        List<LegacyFollowVo> list = legacyFollowService.queryList(bo);
-        ExcelUtil.exportExcel(list, "关注", LegacyFollowVo.class, response);
+    @PostMapping("/is-follow")
+    public R<Boolean> checkFollow(@RequestBody LegacyFollow follow) {
+        LegacyFollow legacyFollow = legacyFollowService.checkIsFollow(follow.getUserId());
+        if (legacyFollow != null) {
+            return R.ok(Boolean.TRUE);
+        }else {
+            return R.ok(Boolean.FALSE);
+        }
+
     }
-
     /**
      * 获取关注详细信息
      *

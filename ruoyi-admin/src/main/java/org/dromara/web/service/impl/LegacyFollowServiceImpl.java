@@ -1,5 +1,7 @@
 package org.dromara.web.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -8,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.web.domain.bo.LegacyUserBo;
 import org.springframework.stereotype.Service;
 import org.dromara.web.domain.bo.LegacyFollowBo;
 import org.dromara.web.domain.vo.LegacyFollowVo;
@@ -37,6 +40,16 @@ public class LegacyFollowServiceImpl implements ILegacyFollowService {
     @Override
     public LegacyFollowVo queryById(Long id){
         return baseMapper.selectVoById(id);
+    }
+
+
+    @Override
+    public LegacyFollow checkIsFollow(Long userId) {
+        LegacyFollowBo bo = new LegacyFollowBo();
+        bo.setUserId(userId);
+        bo.setFansId(StpUtil.getLoginIdAsLong());
+        LambdaQueryWrapper<LegacyFollow> lqw = buildQueryWrapper(bo);
+        return baseMapper.selectOne(lqw);
     }
 
     /**

@@ -22,6 +22,8 @@ public interface ILegacyFollowService {
      */
     LegacyFollowVo queryById(Long id);
 
+    LegacyFollow checkIsFollow(Long userId);
+
     /**
      * 查询关注列表
      */

@@ -32,7 +32,7 @@ import java.util.List;
 //@Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/web/comment")
+@RequestMapping("/v1/web/comments")
 @Tag(name = "前台评论模块")
 public class LegacyCommentFrontController extends BaseController {
 
@@ -45,7 +45,7 @@ public class LegacyCommentFrontController extends BaseController {
      */
 //    @SaCheckPermission("web:comment:list")
     @GetMapping("/getArticleList")
-    @Operation(summary = "获取前台所有评论列表")
+    @Operation(summary = "获取所有评论列表")
     @SaIgnore
     public TableDataInfo<LegacyCommentVo> list(LegacyCommentBo bo, PageQuery pageQuery) {
         return legacyCommentService.queryPageList(bo, pageQuery);

@@ -2,6 +2,7 @@ package org.dromara.web.domain.vo;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.dromara.web.domain.LegacyUser;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -64,7 +65,7 @@ public class LegacyUserVo implements Serializable {
      * 介绍信息
      */
     @ExcelProperty(value = "介绍信息")
-    private String introduc;
+    private String introduction;
 
     /**
      * 位置信息
@@ -91,7 +92,7 @@ public class LegacyUserVo implements Serializable {
     private Integer goodNum;
 
     /**
-     * 
+     *
      */
     @ExcelProperty(value = "")
     private Integer readNum;
@@ -108,5 +109,8 @@ public class LegacyUserVo implements Serializable {
     @ExcelProperty(value = "修改时间")
     private Date modifiedDate;
 
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String token; // 用户的token
 
 }

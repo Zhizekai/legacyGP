@@ -57,7 +57,7 @@ public class LegacyUserBo extends FrontBaseEntity {
      * 介绍信息
      */
     @NotBlank(message = "介绍信息不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String introduc;
+    private String introduction;
 
     /**
      * 位置信息

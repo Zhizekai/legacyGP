@@ -2,6 +2,7 @@ package org.dromara.web.domain.vo;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.dromara.web.domain.LegacyComment;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -9,6 +10,7 @@ import org.dromara.common.excel.annotation.ExcelDictFormat;
 import org.dromara.common.excel.convert.ExcelDictConvert;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
+import org.dromara.web.domain.LegacyUser;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -91,5 +93,7 @@ public class LegacyCommentVo implements Serializable {
     @ExcelProperty(value = "修改时间")
     private Date modifiedDate;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private LegacyUser legacyUser;  // 评论的用户
 
 }
