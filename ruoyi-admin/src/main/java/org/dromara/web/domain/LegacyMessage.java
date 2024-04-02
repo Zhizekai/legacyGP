@@ -27,7 +27,7 @@ public class LegacyMessage extends FrontBaseEntity {
     /**
      * 消息id
      */
-    @TableId(value = "id")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**

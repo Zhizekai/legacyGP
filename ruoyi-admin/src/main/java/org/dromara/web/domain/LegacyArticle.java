@@ -27,7 +27,7 @@ public class LegacyArticle extends FrontBaseEntity {
     /**
      * 文章id
      */
-    @TableId(value = "id")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**

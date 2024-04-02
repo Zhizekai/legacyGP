@@ -1,6 +1,8 @@
 package org.dromara.web.domain.vo;
 
 import java.util.Date;
+
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.dromara.web.domain.LegacyUser;
@@ -112,5 +114,16 @@ public class LegacyUserVo implements Serializable {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String token; // 用户的token
+
+
+    // 粉丝数
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @TableField(exist = false)
+    private Long fansNum;
+
+    // 关注数
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @TableField(exist = false)
+    private Long followNum;
 
 }

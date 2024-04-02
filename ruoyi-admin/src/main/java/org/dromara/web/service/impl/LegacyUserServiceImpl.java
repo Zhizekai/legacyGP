@@ -1,5 +1,6 @@
 package org.dromara.web.service.impl;
 
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -8,6 +9,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.web.domain.LegacyFollow;
+import org.dromara.web.mapper.LegacyFollowMapper;
 import org.springframework.stereotype.Service;
 import org.dromara.web.domain.bo.LegacyUserBo;
 import org.dromara.web.domain.vo.LegacyUserVo;
@@ -30,6 +33,8 @@ import java.util.Collection;
 public class LegacyUserServiceImpl implements ILegacyUserService {
 
     private final LegacyUserMapper baseMapper;
+
+    private final LegacyFollowMapper legacyFollowMapper;
 
     /**
      * 查询用户
@@ -56,6 +61,27 @@ public class LegacyUserServiceImpl implements ILegacyUserService {
     public List<LegacyUserVo> queryList(LegacyUserBo bo) {
         LambdaQueryWrapper<LegacyUser> lqw = buildQueryWrapper(bo);
         return baseMapper.selectVoList(lqw);
+    }
+
+
+    @Override
+    public LegacyUserVo queryUserFollowAndFans(LegacyUserVo legacyUserVo) {
+        Long userId  = legacyUserVo.getId();
+
+        // 获取粉丝数
+        MPJLambdaWrapper<LegacyFollow> wrapper = new MPJLambdaWrapper<>();
+        wrapper.eq(userId!=null, LegacyFollow::getUserId, userId);
+        Long fansNum = legacyFollowMapper.selectCount(wrapper);
+
+        // 获取关注数
+        MPJLambdaWrapper<LegacyFollow> wrapper2 = new MPJLambdaWrapper<>();
+        wrapper2.eq(userId!=null, LegacyFollow::getFansId, userId);
+        Long followNum = legacyFollowMapper.selectCount(wrapper2);
+
+        legacyUserVo.setFansNum(fansNum);
+        legacyUserVo.setFollowNum(followNum);
+
+        return legacyUserVo;
     }
 
     private LambdaQueryWrapper<LegacyUser> buildQueryWrapper(LegacyUserBo bo) {

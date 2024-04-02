@@ -27,7 +27,7 @@ public class LegacyPraise extends FrontBaseEntity {
     /**
      * 点赞id
      */
-    @TableId(value = "id")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**

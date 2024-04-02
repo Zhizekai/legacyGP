@@ -27,7 +27,7 @@ public class LegacyComment extends FrontBaseEntity {
     /**
      * 评论id
      */
-    @TableId(value = "id")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**

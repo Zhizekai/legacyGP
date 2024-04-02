@@ -32,6 +32,10 @@ public interface ILegacyUserService {
      */
     List<LegacyUserVo> queryList(LegacyUserBo bo);
 
+
+    // 给用户对象添加粉丝数和关注数
+    LegacyUserVo queryUserFollowAndFans(LegacyUserVo legacyUserVo);
+
     /**
      * 新增用户
      */

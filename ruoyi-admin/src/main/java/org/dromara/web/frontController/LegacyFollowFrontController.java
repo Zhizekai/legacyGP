@@ -2,6 +2,8 @@ package org.dromara.web.frontController;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.dev33.satoken.stp.StpUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotEmpty;
@@ -71,13 +73,25 @@ public class LegacyFollowFrontController extends BaseController {
         return R.ok(legacyFollowService.queryById(id));
     }
 
-    /**
-     * 新增关注
-     */
+    // 关注和取消关注
     @RepeatSubmit()
-    @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody LegacyFollowBo bo) {
-        return toAjax(legacyFollowService.insertByBo(bo));
+    @PostMapping("/toggle")
+    @Operation(summary = "用户关注和取消关注接口")
+    public R<String> add(@RequestBody LegacyFollowBo bo) {
+
+        long loginIdAsLong = StpUtil.getLoginIdAsLong();
+        bo.setFansId(loginIdAsLong);
+        Boolean aBoolean = legacyFollowService.followToggle(bo);
+        if (aBoolean) {
+            LegacyFollow legacyFollow = legacyFollowService.checkIsFollow(bo.getUserId());
+            if (legacyFollow != null) {
+                return R.ok("关注成功");
+            }else {
+                return R.ok("取消关注成功");
+            }
+        }else {
+            return R.fail("操作失败");
+        }
     }
 
     /**

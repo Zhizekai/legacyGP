@@ -27,7 +27,7 @@ public class LegacyShortmsg extends FrontBaseEntity {
     /**
      * 短消息id
      */
-    @TableId(value = "id")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**

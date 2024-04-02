@@ -39,6 +39,10 @@ public interface ILegacyFollowService {
      */
     Boolean insertByBo(LegacyFollowBo bo);
 
+
+    // 关注和取消关注用户
+    Boolean followToggle(LegacyFollowBo bo);
+
     /**
      * 修改关注
      */

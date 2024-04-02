@@ -95,7 +95,11 @@ public class LegacyUserFrontController extends BaseController {
                 StpUtil.login(legacyUserVo.getId());
                 SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
                 legacyUserVo.setToken(tokenInfo.getTokenValue());
-                return R.ok(legacyUserVo);
+
+                // 添加关注数和粉丝数
+                LegacyUserVo vo = legacyUserService.queryUserFollowAndFans(legacyUserVo);
+
+                return R.ok(vo);
             } else {
                 return R.fail(20001,"请检查用户名和密码");
             }
