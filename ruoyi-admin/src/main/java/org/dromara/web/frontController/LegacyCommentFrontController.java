@@ -34,6 +34,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/v1/web/comments")
 @Tag(name = "前台评论模块")
+@SaIgnore
 public class LegacyCommentFrontController extends BaseController {
 
     private final ILegacyCommentService legacyCommentService;
@@ -46,14 +47,14 @@ public class LegacyCommentFrontController extends BaseController {
 //    @SaCheckPermission("web:comment:list")
     @GetMapping("/getArticleList")
     @Operation(summary = "获取所有评论列表")
-    @SaIgnore
+
     public TableDataInfo<LegacyCommentVo> list(LegacyCommentBo bo, PageQuery pageQuery) {
         return legacyCommentService.queryPageList(bo, pageQuery);
     }
 
     @GetMapping("/list/{sourceId}")
     @Operation(summary = "获取前台某个文章的评论列表")
-    @SaIgnore
+
     public TableDataInfo<LegacyCommentVo> getCommentsByArticleId(
         @NotEmpty(message = "文章id不能为空") @PathVariable Long sourceId , PageQuery pageQuery) {
 
@@ -66,7 +67,7 @@ public class LegacyCommentFrontController extends BaseController {
 
     @GetMapping("/myList")
     @Operation(summary = "获取我的的评论列表")
-    @SaIgnore
+
     public TableDataInfo<LegacyCommentVo> getCommentsByUserId(Long userId, PageQuery pageQuery) {
 
         LegacyCommentBo legacyCommentBo = new LegacyCommentBo();
@@ -96,7 +97,7 @@ public class LegacyCommentFrontController extends BaseController {
     @RepeatSubmit()
     @PostMapping("/create")
     @Operation(summary = "新增前台评论")
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody LegacyCommentBo bo) {
+    public R<Void> add( @RequestBody LegacyCommentBo bo) {
 
         Boolean aBoolean = legacyCommentService.insertByBo(bo);
         if (aBoolean) {

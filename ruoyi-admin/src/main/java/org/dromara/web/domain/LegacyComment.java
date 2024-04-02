@@ -76,4 +76,6 @@ public class LegacyComment extends FrontBaseEntity {
     private Date modifiedDate;
 
 
+    private Long createBy;
+
 }

@@ -49,7 +49,7 @@ public class LegacyCommentServiceImpl implements ILegacyCommentService {
         MPJLambdaWrapper<LegacyComment> lqw = buildQueryWrapper(bo);
         lqw.selectAll(LegacyComment.class)
             .selectAssociation(LegacyUser.class, LegacyCommentVo::getLegacyUser)
-            .leftJoin(LegacyUser.class, LegacyUser::getId, LegacyComment::getSourceId);
+            .leftJoin(LegacyUser.class, LegacyUser::getId, LegacyComment::getCreateBy);
         Page<LegacyCommentVo> result = baseMapper.selectJoinPage( pageQuery.build(), LegacyCommentVo.class,lqw);
         return TableDataInfo.build(result);
     }

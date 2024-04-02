@@ -84,4 +84,7 @@ public class LegacyCommentBo extends FrontBaseEntity {
     private Date modifiedDate;
 
 
+    private Long createBy;
+
+
 }

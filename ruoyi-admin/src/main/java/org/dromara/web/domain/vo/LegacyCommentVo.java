@@ -96,4 +96,7 @@ public class LegacyCommentVo implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private LegacyUser legacyUser;  // 评论的用户
 
+    // 评论创建者的id
+    private Long createBy;
+
 }
