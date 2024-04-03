@@ -54,7 +54,7 @@ public class LegacyMessageFrontController extends BaseController {
     }
     @GetMapping("/preview")
     @Operation(summary = "统计前台用户的消息数量")
-    public R<Map<String,Long>> countMessage(Long userId) {
+    public R<Map<String, Long>> countMessage(Long userId) {
         Long userIdByToken = StpUtil.getLoginIdAsLong();
         return R.ok(legacyMessageService.countMessage(Objects.requireNonNullElse(userId, userIdByToken)));
     }

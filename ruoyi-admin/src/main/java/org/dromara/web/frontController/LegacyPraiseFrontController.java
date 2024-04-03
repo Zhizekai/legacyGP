@@ -2,6 +2,7 @@ package org.dromara.web.frontController;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.dev33.satoken.stp.StpUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotEmpty;
@@ -36,7 +37,7 @@ import java.util.List;
 @SaIgnore
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/web/praise")
+@RequestMapping("/v1/web/praises")
 public class LegacyPraiseFrontController extends BaseController {
 
     private final ILegacyPraiseService legacyPraiseService;
@@ -67,10 +68,10 @@ public class LegacyPraiseFrontController extends BaseController {
 
     @GetMapping("/myList")
     @Operation(summary = "获取我的点赞和收藏列表")
-    public TableDataInfo<LegacyPraiseVo> getMyPraiseList(Long userId, PageQuery pageQuery) {
-
+    public TableDataInfo<LegacyPraiseVo> getMyPraiseList(PageQuery pageQuery) {
+        long loginIdAsLong = StpUtil.getLoginIdAsLong();
         LegacyPraiseBo legacyPraiseBo = new LegacyPraiseBo();
-        legacyPraiseBo.setTargetUser(userId);
+        legacyPraiseBo.setTargetUser(loginIdAsLong);
         return legacyPraiseService.queryPageList(legacyPraiseBo, pageQuery);
     }
 

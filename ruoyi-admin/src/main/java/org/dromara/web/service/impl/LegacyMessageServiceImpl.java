@@ -1,8 +1,7 @@
 package org.dromara.web.service.impl;
 
-import io.swagger.v3.oas.models.security.SecurityScheme;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dromara.common.core.utils.MapstructUtils;
-import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -75,31 +74,21 @@ public class LegacyMessageServiceImpl implements ILegacyMessageService {
 
     @Override
     // 统计消息
-    public Map<String,Long> countMessage(Long userId) {
+    public Map<String, Long> countMessage(Long userId) {
 
         // 我怀疑Wrappers也是框架作者从mp核心代码中拿出来的，这个玩意mp对外api也没有写
-        LambdaQueryWrapper<LegacyMessage> lqw1 = Wrappers.lambdaQuery();
+        QueryWrapper<LegacyMessage> lqw1 = new  QueryWrapper<>();
         System.out.println(userId);
-        lqw1.eq(userId != null, LegacyMessage::getUserId, userId);
-        lqw1.eq(userId != null, LegacyMessage::getStatus, 1); // 评论数
-        Long commentCount = baseMapper.selectCount(lqw1);
-        System.out.println(commentCount);
-
-        LambdaQueryWrapper<LegacyMessage> lqw2 = Wrappers.lambdaQuery();
-        lqw2.eq(userId != null, LegacyMessage::getUserId, userId);
-        lqw2.eq(userId != null, LegacyMessage::getStatus, 2); // 点赞数
-        Long praiseCount = baseMapper.selectCount(lqw2);
-        System.out.println(praiseCount);
-        LambdaQueryWrapper<LegacyMessage> lqw3 = Wrappers.lambdaQuery();
-        lqw3.eq(userId != null, LegacyMessage::getUserId, userId);
-        lqw3.eq(userId != null, LegacyMessage::getStatus, 3); // follow数
-        Long followCount = baseMapper.selectCount(lqw2);
-        System.out.println(followCount);
-
+        lqw1.select("count(*) as num")
+            .eq(userId != null, "user_id", userId)
+            .eq("status", 0)
+            .groupBy("type");
+        List<Map<String, Object>> aLong = baseMapper.selectMaps(lqw1);
+        System.out.println(aLong);
         Map<String, Long> map = new HashMap<String, Long>();
-        map.put("comment", commentCount);
-        map.put("praise", praiseCount);
-        map.put("total", followCount);
+        map.put("comment", (Long) aLong.get(0).get("num"));
+        map.put("praise",  (Long) aLong.get(1).get("num"));
+        map.put("follow",  (Long) aLong.get(2).get("num"));
 
         return map;
     }

@@ -59,6 +59,6 @@ public class LegacyPraise extends FrontBaseEntity {
      * 修改时间
      */
     private Date modifiedDate;
-
+    private Long createBy;
 
 }

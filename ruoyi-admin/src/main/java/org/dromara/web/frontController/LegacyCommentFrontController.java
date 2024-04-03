@@ -1,6 +1,7 @@
 package org.dromara.web.frontController;
 
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.dev33.satoken.stp.StpUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotEmpty;
@@ -68,10 +69,11 @@ public class LegacyCommentFrontController extends BaseController {
     @GetMapping("/myList")
     @Operation(summary = "获取我的的评论列表")
 
-    public TableDataInfo<LegacyCommentVo> getCommentsByUserId(Long userId, PageQuery pageQuery) {
+    public TableDataInfo<LegacyCommentVo> getCommentsByUserId(PageQuery pageQuery) {
 
+        long loginIdAsLong = StpUtil.getLoginIdAsLong();
         LegacyCommentBo legacyCommentBo = new LegacyCommentBo();
-        legacyCommentBo.setTargetUser(userId);
+        legacyCommentBo.setTargetUser(loginIdAsLong);
         return legacyCommentService.queryPageList(legacyCommentBo, pageQuery);
 
     }

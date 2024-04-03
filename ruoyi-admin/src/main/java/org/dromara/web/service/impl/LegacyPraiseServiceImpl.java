@@ -1,5 +1,6 @@
 package org.dromara.web.service.impl;
 
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -8,6 +9,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.web.domain.LegacyComment;
+import org.dromara.web.domain.LegacyUser;
+import org.dromara.web.domain.vo.LegacyCommentVo;
 import org.springframework.stereotype.Service;
 import org.dromara.web.domain.bo.LegacyPraiseBo;
 import org.dromara.web.domain.vo.LegacyPraiseVo;
@@ -44,8 +48,11 @@ public class LegacyPraiseServiceImpl implements ILegacyPraiseService {
      */
     @Override
     public TableDataInfo<LegacyPraiseVo> queryPageList(LegacyPraiseBo bo, PageQuery pageQuery) {
-        LambdaQueryWrapper<LegacyPraise> lqw = buildQueryWrapper(bo);
-        Page<LegacyPraiseVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        MPJLambdaWrapper<LegacyPraise> wrapper = new MPJLambdaWrapper<>();
+        wrapper.selectAll(LegacyPraise.class)
+            .selectAssociation(LegacyUser.class, LegacyPraiseVo::getLegacyUser)
+            .leftJoin(LegacyUser.class, LegacyUser::getId, LegacyPraise::getCreateBy);
+        Page<LegacyPraiseVo> result = baseMapper.selectVoPage(pageQuery.build(), wrapper);
         return TableDataInfo.build(result);
     }
 

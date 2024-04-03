@@ -1,7 +1,5 @@
 package org.dromara.web.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import org.dromara.web.domain.LegacyMessage;
 import org.dromara.web.domain.vo.LegacyMessageVo;
 import org.dromara.web.domain.bo.LegacyMessageBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -32,7 +30,7 @@ public interface ILegacyMessageService {
 
 
     // 查询消息数量
-    Map<String,Long> countMessage(Long userId);
+    Map<String, Long> countMessage(Long userId);
     /**
      * 查询消息列表
      */

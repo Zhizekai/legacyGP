@@ -73,4 +73,6 @@ public class LegacyMessageVo implements Serializable {
     private Date modifiedDate;
 
 
+    private Integer count;
+
 }

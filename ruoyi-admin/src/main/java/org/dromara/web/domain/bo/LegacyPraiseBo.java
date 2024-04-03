@@ -65,5 +65,5 @@ public class LegacyPraiseBo extends FrontBaseEntity {
     @NotNull(message = "修改时间不能为空", groups = { AddGroup.class, EditGroup.class })
     private Date modifiedDate;
 
-
+    private Long createBy;
 }
