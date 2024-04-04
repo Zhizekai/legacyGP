@@ -96,5 +96,11 @@ public class LegacyArticleVo implements Serializable {
     @ExcelProperty(value = "修改时间")
     private Date modifiedDate;
 
+    // 点赞数
+    private Long praiseCount;
+
+    // 收藏数
+    private Long collectionCount;
+
 
 }

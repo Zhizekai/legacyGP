@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -75,21 +76,33 @@ public class LegacyPraiseFrontController extends BaseController {
         return legacyPraiseService.queryPageList(legacyPraiseBo, pageQuery);
     }
 
-    /**
-     * 新增点赞
-     */
+    // 点赞和取消点赞
     @RepeatSubmit()
     @PostMapping("/toggle")
-    public R<Void> add(@RequestBody LegacyPraiseBo bo) {
+    public R<HashMap<String, String>> praiseToggle(@RequestBody LegacyPraiseBo bo) {
+        long loginIdAsLong = StpUtil.getLoginIdAsLong();
         // 如果点赞过就取消点赞
         List<LegacyPraiseVo> legacyPraiseVos = legacyPraiseService.queryList(bo);
         if (legacyPraiseVos.size() == 1) {
             Collection<Long> longs = new ArrayList<>();
             longs.add(legacyPraiseVos.get(0).getId());
-            return toAjax(legacyPraiseService.deleteWithValidByIds(longs, false));
+            if (legacyPraiseService.deleteWithValidByIds(longs, false)) {
+                HashMap<String, String> map = new HashMap<>();
+                map.put("action", "delete");
+                return R.ok("取消点赞成功",map);
+            }else {
+                return R.fail("取消点赞失败");
+            }
         } else {
             // 如果没有点赞就添加点赞
-            return toAjax(legacyPraiseService.insertByBo(bo));
+            bo.setCreateBy(loginIdAsLong);
+            if (legacyPraiseService.insertByBo(bo)) {
+                HashMap<String, String> map = new HashMap<>();
+                map.put("action", "create");
+                return R.ok("点赞成功", map);
+            }else {
+                return R.ok("点赞失败");
+            }
         }
     }
 

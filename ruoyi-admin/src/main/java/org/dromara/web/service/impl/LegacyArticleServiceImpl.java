@@ -9,8 +9,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.web.domain.LegacyPraise;
 import org.dromara.web.domain.LegacyUser;
 import org.dromara.web.domain.bo.LegacyUserBo;
+import org.dromara.web.mapper.LegacyPraiseMapper;
 import org.springframework.stereotype.Service;
 import org.dromara.web.domain.bo.LegacyArticleBo;
 import org.dromara.web.domain.vo.LegacyArticleVo;
@@ -34,6 +36,8 @@ public class LegacyArticleServiceImpl implements ILegacyArticleService {
 
     private final LegacyArticleMapper baseMapper;
 
+    private final LegacyPraiseMapper legacyPraiseMapper;
+
     // 获取文章详细信息
     @Override
     public LegacyArticleVo queryById(Long id){
@@ -44,7 +48,13 @@ public class LegacyArticleServiceImpl implements ILegacyArticleService {
             .eq(LegacyArticle::getId, id)
             .selectAssociation(LegacyUser.class, LegacyArticleVo::getUser)
             .leftJoin(LegacyUser.class, LegacyUser::getId, LegacyArticle::getAuthor);
-        return baseMapper.selectJoinOne(LegacyArticleVo.class, mpjLambdaWrapper);
+        LegacyArticleVo legacyArticleVo = baseMapper.selectJoinOne(LegacyArticleVo.class, mpjLambdaWrapper);
+        MPJLambdaWrapper<LegacyPraise> legacyPraiseMPJLambdaWrapper = new MPJLambdaWrapper<>();
+        legacyPraiseMPJLambdaWrapper.eq(LegacyPraise::getTargetId, legacyArticleVo.getId());
+        Long praiseCount = legacyPraiseMapper.selectCount(legacyPraiseMPJLambdaWrapper);
+        legacyArticleVo.setPraiseCount(praiseCount);
+        legacyArticleVo.setCollectionCount(Long.parseLong("0"));
+        return legacyArticleVo;
     }
 
     /**
