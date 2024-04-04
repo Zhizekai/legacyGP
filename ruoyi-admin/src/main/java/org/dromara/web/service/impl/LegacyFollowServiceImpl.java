@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.web.domain.LegacyUser;
 import org.dromara.web.domain.bo.LegacyUserBo;
 import org.springframework.stereotype.Service;
 import org.dromara.web.domain.bo.LegacyFollowBo;
@@ -49,7 +50,7 @@ public class LegacyFollowServiceImpl implements ILegacyFollowService {
         LegacyFollowBo bo = new LegacyFollowBo();
         bo.setUserId(userId);
         bo.setFansId(StpUtil.getLoginIdAsLong());
-        LambdaQueryWrapper<LegacyFollow> lqw = buildQueryWrapper(bo);
+        MPJLambdaWrapper<LegacyFollow> lqw = buildQueryWrapper(bo);
         return baseMapper.selectOne(lqw);
     }
 
@@ -58,8 +59,13 @@ public class LegacyFollowServiceImpl implements ILegacyFollowService {
      */
     @Override
     public TableDataInfo<LegacyFollowVo> queryPageList(LegacyFollowBo bo, PageQuery pageQuery) {
-        LambdaQueryWrapper<LegacyFollow> lqw = buildQueryWrapper(bo);
-        Page<LegacyFollowVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+
+
+        MPJLambdaWrapper<LegacyFollow> lqw = buildQueryWrapper(bo);
+        lqw.selectAll(LegacyFollow.class)
+            .selectAssociation(LegacyUser.class, LegacyFollowVo::getLegacyUser)
+            .leftJoin(LegacyUser.class, LegacyUser::getId, LegacyFollow::getFansId);
+        Page<LegacyFollowVo> result = baseMapper.selectJoinPage(pageQuery.build(),LegacyFollowVo.class,  lqw);
         return TableDataInfo.build(result);
     }
 
@@ -68,13 +74,13 @@ public class LegacyFollowServiceImpl implements ILegacyFollowService {
      */
     @Override
     public List<LegacyFollowVo> queryList(LegacyFollowBo bo) {
-        LambdaQueryWrapper<LegacyFollow> lqw = buildQueryWrapper(bo);
+        MPJLambdaWrapper<LegacyFollow> lqw = buildQueryWrapper(bo);
         return baseMapper.selectVoList(lqw);
     }
 
-    private LambdaQueryWrapper<LegacyFollow> buildQueryWrapper(LegacyFollowBo bo) {
+    private MPJLambdaWrapper<LegacyFollow> buildQueryWrapper(LegacyFollowBo bo) {
         Map<String, Object> params = bo.getParams();
-        LambdaQueryWrapper<LegacyFollow> lqw = Wrappers.lambdaQuery();
+        MPJLambdaWrapper<LegacyFollow> lqw = new MPJLambdaWrapper<LegacyFollow>();
         lqw.eq(bo.getUserId() != null, LegacyFollow::getUserId, bo.getUserId());
         lqw.eq(bo.getFansId() != null, LegacyFollow::getFansId, bo.getFansId());
         lqw.between(params.get("beginCreateDate") != null && params.get("endCreateDate") != null,

@@ -38,7 +38,7 @@ public class LegacyArticle extends FrontBaseEntity {
     /**
      * 文章介绍
      */
-    private String intro;
+    private String introduction;
 
     /**
      * 文章内容

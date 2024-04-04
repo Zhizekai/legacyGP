@@ -41,6 +41,7 @@ public class LegacyArticleServiceImpl implements ILegacyArticleService {
         MPJLambdaWrapper<LegacyArticle> mpjLambdaWrapper = new MPJLambdaWrapper<>();
         mpjLambdaWrapper
             .selectAll(LegacyArticle.class)
+            .eq(LegacyArticle::getId, id)
             .selectAssociation(LegacyUser.class, LegacyArticleVo::getUser)
             .leftJoin(LegacyUser.class, LegacyUser::getId, LegacyArticle::getAuthor);
         return baseMapper.selectJoinOne(LegacyArticleVo.class, mpjLambdaWrapper);
@@ -73,7 +74,7 @@ public class LegacyArticleServiceImpl implements ILegacyArticleService {
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<LegacyArticle> lqw = Wrappers.lambdaQuery();
         lqw.eq(StringUtils.isNotBlank(bo.getTitle()), LegacyArticle::getTitle, bo.getTitle());
-        lqw.eq(StringUtils.isNotBlank(bo.getIntro()), LegacyArticle::getIntro, bo.getIntro());
+        lqw.eq(StringUtils.isNotBlank(bo.getIntroduction()), LegacyArticle::getIntroduction, bo.getIntroduction());
         lqw.eq(StringUtils.isNotBlank(bo.getContent()), LegacyArticle::getContent, bo.getContent());
         lqw.eq(StringUtils.isNotBlank(bo.getCategory()), LegacyArticle::getCategory, bo.getCategory());
         lqw.eq(bo.getStatus() != null, LegacyArticle::getStatus, bo.getStatus());

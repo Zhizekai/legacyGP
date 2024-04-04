@@ -48,7 +48,7 @@ public class LegacyArticleVo implements Serializable {
      * 文章介绍
      */
     @ExcelProperty(value = "文章介绍")
-    private String intro;
+    private String introduction;
 
     /**
      * 文章内容

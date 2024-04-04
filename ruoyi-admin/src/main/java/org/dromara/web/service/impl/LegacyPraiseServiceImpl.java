@@ -52,7 +52,7 @@ public class LegacyPraiseServiceImpl implements ILegacyPraiseService {
         wrapper.selectAll(LegacyPraise.class)
             .selectAssociation(LegacyUser.class, LegacyPraiseVo::getLegacyUser)
             .leftJoin(LegacyUser.class, LegacyUser::getId, LegacyPraise::getCreateBy);
-        Page<LegacyPraiseVo> result = baseMapper.selectVoPage(pageQuery.build(), wrapper);
+        Page<LegacyPraiseVo> result = baseMapper.selectJoinPage(pageQuery.build(), LegacyPraiseVo.class, wrapper);
         return TableDataInfo.build(result);
     }
 

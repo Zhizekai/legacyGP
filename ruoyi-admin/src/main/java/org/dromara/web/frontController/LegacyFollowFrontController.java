@@ -47,12 +47,24 @@ public class LegacyFollowFrontController extends BaseController {
      * 查询关注列表
      */
     @GetMapping("/list")
+    @Operation(summary = "获取所有关注列表")
     public TableDataInfo<LegacyFollowVo> list(LegacyFollowBo bo, PageQuery pageQuery) {
         return legacyFollowService.queryPageList(bo, pageQuery);
     }
 
 
+    // 获取用户新增粉丝列表
+    @GetMapping("/lists")
+    @Operation(summary = "获取我的新增粉丝列表")
+    public TableDataInfo<LegacyFollowVo> listMessage(PageQuery pageQuery) {
+        LegacyFollowBo legacyFollowBo = new LegacyFollowBo();
+        legacyFollowBo.setUserId(StpUtil.getLoginIdAsLong());
+        return legacyFollowService.queryPageList(legacyFollowBo, pageQuery);
+    }
+
+    // 检查是否关注了某个用户
     @PostMapping("/is-follow")
+    @Operation(summary = "检查是否关注了某个用户")
     public R<Boolean> checkFollow(@RequestBody LegacyFollow follow) {
         LegacyFollow legacyFollow = legacyFollowService.checkIsFollow(follow.getUserId());
         if (legacyFollow != null) {
@@ -60,14 +72,12 @@ public class LegacyFollowFrontController extends BaseController {
         }else {
             return R.ok(Boolean.FALSE);
         }
-
     }
-    /**
-     * 获取关注详细信息
-     *
-     * @param id 主键
-     */
+
+
+    // 获取关注详细信息
     @GetMapping("/{id}")
+    @Operation(summary = "获取关注详细信息")
     public R<LegacyFollowVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long id) {
         return R.ok(legacyFollowService.queryById(id));
@@ -103,11 +113,7 @@ public class LegacyFollowFrontController extends BaseController {
         return toAjax(legacyFollowService.updateByBo(bo));
     }
 
-    /**
-     * 删除关注
-     *
-     * @param ids 主键串
-     */
+    // 取消关注
     @DeleteMapping("/{ids}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {

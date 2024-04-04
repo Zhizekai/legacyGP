@@ -9,6 +9,7 @@ import org.dromara.common.excel.annotation.ExcelDictFormat;
 import org.dromara.common.excel.convert.ExcelDictConvert;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
+import org.dromara.web.domain.LegacyUser;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -60,5 +61,7 @@ public class LegacyFollowVo implements Serializable {
     @ExcelProperty(value = "修改时间")
     private Date modifiedDate;
 
+    // 粉丝用户信息
+    private LegacyUser legacyUser;
 
 }

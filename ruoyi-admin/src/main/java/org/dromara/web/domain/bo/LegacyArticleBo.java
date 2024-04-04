@@ -37,7 +37,7 @@ public class LegacyArticleBo extends FrontBaseEntity {
      * 文章介绍
      */
     @NotBlank(message = "文章介绍不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String intro;
+    private String introduction;
 
     /**
      * 文章内容
