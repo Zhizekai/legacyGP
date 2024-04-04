@@ -55,5 +55,7 @@ public class LegacyShortmsg extends FrontBaseEntity {
      */
     private Date modifiedDate;
 
+    private Long createdBy;
+
 
 }

@@ -1,5 +1,6 @@
 package org.dromara.web.service.impl;
 
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -8,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.web.domain.LegacyUser;
 import org.springframework.stereotype.Service;
 import org.dromara.web.domain.bo.LegacyShortmsgBo;
 import org.dromara.web.domain.vo.LegacyShortmsgVo;
@@ -44,8 +46,10 @@ public class LegacyShortmsgServiceImpl implements ILegacyShortmsgService {
      */
     @Override
     public TableDataInfo<LegacyShortmsgVo> queryPageList(LegacyShortmsgBo bo, PageQuery pageQuery) {
-        LambdaQueryWrapper<LegacyShortmsg> lqw = buildQueryWrapper(bo);
-        Page<LegacyShortmsgVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        MPJLambdaWrapper<LegacyShortmsg> lqw = buildQueryWrapper(bo);
+        lqw.selectAssociation(LegacyUser.class,LegacyShortmsgVo::getUser)
+            .leftJoin(LegacyUser.class,LegacyUser::getId, LegacyShortmsg::getCreatedBy);
+        Page<LegacyShortmsgVo> result = baseMapper.selectJoinPage(pageQuery.build(), LegacyShortmsgVo.class, lqw);
         return TableDataInfo.build(result);
     }
 
@@ -54,15 +58,14 @@ public class LegacyShortmsgServiceImpl implements ILegacyShortmsgService {
      */
     @Override
     public List<LegacyShortmsgVo> queryList(LegacyShortmsgBo bo) {
-        LambdaQueryWrapper<LegacyShortmsg> lqw = buildQueryWrapper(bo);
+        MPJLambdaWrapper<LegacyShortmsg> lqw = buildQueryWrapper(bo);
         return baseMapper.selectVoList(lqw);
     }
 
-    private LambdaQueryWrapper<LegacyShortmsg> buildQueryWrapper(LegacyShortmsgBo bo) {
+    private MPJLambdaWrapper<LegacyShortmsg> buildQueryWrapper(LegacyShortmsgBo bo) {
         Map<String, Object> params = bo.getParams();
-        LambdaQueryWrapper<LegacyShortmsg> lqw = Wrappers.lambdaQuery();
+        MPJLambdaWrapper<LegacyShortmsg> lqw = new MPJLambdaWrapper<>();
         lqw.eq(StringUtils.isNotBlank(bo.getContent()), LegacyShortmsg::getContent, bo.getContent());
-        lqw.eq(StringUtils.isNotBlank(bo.getImages()), LegacyShortmsg::getImages, bo.getImages());
         lqw.eq(StringUtils.isNotBlank(bo.getSmGroup()), LegacyShortmsg::getSmGroup, bo.getSmGroup());
         lqw.between(params.get("beginCreateDate") != null && params.get("endCreateDate") != null,
             LegacyShortmsg::getCreateDate ,params.get("beginCreateDate"), params.get("endCreateDate"));

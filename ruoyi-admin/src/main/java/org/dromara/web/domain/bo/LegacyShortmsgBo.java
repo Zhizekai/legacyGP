@@ -60,4 +60,8 @@ public class LegacyShortmsgBo extends FrontBaseEntity {
     private Date modifiedDate;
 
 
+
+    private Long createdBy;
+
+
 }

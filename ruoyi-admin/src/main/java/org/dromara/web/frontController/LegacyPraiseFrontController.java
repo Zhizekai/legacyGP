@@ -101,7 +101,7 @@ public class LegacyPraiseFrontController extends BaseController {
                 map.put("action", "create");
                 return R.ok("点赞成功", map);
             }else {
-                return R.ok("点赞失败");
+                return R.fail("点赞失败");
             }
         }
     }
