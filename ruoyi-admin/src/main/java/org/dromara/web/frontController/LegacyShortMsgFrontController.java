@@ -2,6 +2,7 @@ package org.dromara.web.frontController;
 
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.google.api.client.repackaged.com.google.common.base.Joiner;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotEmpty;
@@ -14,12 +15,18 @@ import org.dromara.common.idempotent.annotation.RepeatSubmit;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
+import org.dromara.system.domain.vo.SysOssUploadVo;
+import org.dromara.system.domain.vo.SysOssVo;
+import org.dromara.system.service.ISysOssService;
 import org.dromara.web.domain.bo.LegacyShortmsgBo;
 import org.dromara.web.domain.vo.LegacyShortmsgVo;
 import org.dromara.web.service.ILegacyShortmsgService;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -36,14 +43,22 @@ import java.util.List;
 public class LegacyShortMsgFrontController extends BaseController {
 
     private final ILegacyShortmsgService legacyShortMsgService;
+    private final ISysOssService ossService;
 
     // 查询短消息列表
 
     @GetMapping("/lists")
     public TableDataInfo<LegacyShortmsgVo> list(LegacyShortmsgBo bo, PageQuery pageQuery) {
 
-        // 这里建议前端直接把userId 放到createdBy里面
-        return legacyShortMsgService.queryPageList(bo, pageQuery);
+        // TODO 这里建议前端直接把userId 放到createdBy里面
+        TableDataInfo<LegacyShortmsgVo> legacyShortmsgVoTableDataInfo = legacyShortMsgService.queryPageList(bo, pageQuery);
+        for ( LegacyShortmsgVo vo : legacyShortmsgVoTableDataInfo.getRows()) {
+            String images = vo.getImages();
+            if (images != null) {
+                vo.setImgList( Arrays.asList(images.split(",")));
+            }
+        }
+        return legacyShortmsgVoTableDataInfo;
     }
 
 
@@ -64,11 +79,34 @@ public class LegacyShortMsgFrontController extends BaseController {
         long loginIdAsLong = StpUtil.getLoginIdAsLong();
         bo.setCreatedBy(loginIdAsLong);
 
-        // TODO 图片列表
-//        String a1 = Joiner.on(",").join(bo.getImages());
+        // 把图片数组变成字符串
+        String a1 = Joiner.on(",").join(bo.getImageBoList());
+        bo.setImages(a1);
 
         // 这里建议前端直接把userId 放到createdBy里面
         return toAjax(legacyShortMsgService.insertByBo(bo));
+    }
+
+    // 上传图片到oss接口
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public R<SysOssUploadVo> upload(@RequestPart("file") MultipartFile file) {
+        if (ObjectUtil.isNull(file)) {
+            return R.fail("上传文件不能为空");
+        }
+        SysOssVo oss = ossService.upload(file);
+        SysOssUploadVo uploadVo = new SysOssUploadVo();
+        uploadVo.setUrl(oss.getUrl());
+        uploadVo.setFileName(oss.getOriginalName());
+        uploadVo.setOssId(oss.getOssId().toString());
+        return R.ok(uploadVo);
+    }
+
+    // 根据id获取图片接口
+    @GetMapping("/listByIds/{ossIds}")
+    public R<List<SysOssVo>> listByIds(@NotEmpty(message = "主键不能为空")
+                                       @PathVariable Long[] ossIds) {
+        List<SysOssVo> list = ossService.listByIds(Arrays.asList(ossIds));
+        return R.ok(list);
     }
 
     // 修改短消息

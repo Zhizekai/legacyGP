@@ -1,6 +1,8 @@
 package org.dromara.web.domain.vo;
 
 import java.util.Date;
+
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.dromara.web.domain.LegacyShortmsg;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
@@ -14,7 +16,7 @@ import org.dromara.web.domain.LegacyUser;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
-
+import java.util.List;
 
 
 /**
@@ -48,6 +50,9 @@ public class LegacyShortmsgVo implements Serializable {
      */
     @ExcelProperty(value = "图片")
     private String images;
+
+    @TableField(exist = false)
+    private List<String> imgList;
 
     /**
      * 分组

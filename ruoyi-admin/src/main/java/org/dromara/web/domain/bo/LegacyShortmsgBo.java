@@ -1,5 +1,6 @@
 package org.dromara.web.domain.bo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import org.dromara.common.mybatis.core.domain.FrontBaseEntity;
 import org.dromara.web.domain.LegacyShortmsg;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
@@ -10,6 +11,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import jakarta.validation.constraints.*;
 import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
@@ -40,6 +43,9 @@ public class LegacyShortmsgBo extends FrontBaseEntity {
      */
     @NotBlank(message = "图片不能为空", groups = { AddGroup.class, EditGroup.class })
     private String images;
+
+    @TableField(exist = false)
+    private List<String> imageBoList;
 
     /**
      * 分组
