@@ -19,6 +19,7 @@ import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
+import org.dromara.web.domain.LegacyArticle;
 import org.dromara.web.domain.bo.LegacyArticleBo;
 import org.dromara.web.domain.vo.LegacyArticleVo;
 import org.dromara.web.service.ILegacyArticleService;
@@ -38,6 +39,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/v1/web/arts")
 @Tag(name = "前台文章模块")
+@SaIgnore // 都不用登录就可以访问接口
 public class LegacyArticleFrontController extends BaseController {
 
     private final ILegacyArticleService legacyArticleService;
@@ -48,7 +50,7 @@ public class LegacyArticleFrontController extends BaseController {
 //    @SaCheckPermission("system:article:list")
     @GetMapping("/list")
     @Operation(summary = "获取前台文章列表")
-    @SaIgnore
+
     public TableDataInfo<LegacyArticleVo> list(LegacyArticleBo bo, PageQuery pageQuery) {
         return legacyArticleService.queryPageList(bo, pageQuery);
     }
@@ -61,7 +63,6 @@ public class LegacyArticleFrontController extends BaseController {
 //    @SaCheckPermission("system:article:query")
     @GetMapping("/detail/{id}")
     @Operation(summary = "获取前台文章详细信息")
-    @SaIgnore
     public R<LegacyArticleVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long id) {
         return R.ok(legacyArticleService.queryById(id));
@@ -75,16 +76,21 @@ public class LegacyArticleFrontController extends BaseController {
     @RepeatSubmit()
     @PostMapping("/create")
     @Operation(summary = "新增前台文章")
-    @SaIgnore
-    public R<Void> add(@RequestBody LegacyArticleBo bo) {
-        return toAjax(legacyArticleService.insertByBo(bo));
+    public R<LegacyArticle> add(@RequestBody LegacyArticleBo bo) {
+        LegacyArticle legacyArticle = legacyArticleService.insertFrontArticleByBo(bo);
+
+        if (legacyArticle != null) {
+            return R.ok("新增文章成功",legacyArticle);
+        }else {
+            return R.fail("新增文章错误");
+        }
+
     }
 
 
     // 发布文章
     @PostMapping("/publish/{id}")
     @Operation(summary = "发布前台文章")
-    @SaIgnore
     public R<String> publishArticle(@PathVariable Long id, Long author) {
         LegacyArticleVo legacyArticleVo = legacyArticleService.queryById(id);
         legacyArticleVo.setStatus(1);
@@ -102,7 +108,7 @@ public class LegacyArticleFrontController extends BaseController {
     @RepeatSubmit()
     @PutMapping("/update/{id}")
     @Operation(summary = "修改前台文章")
-    @SaIgnore
+
     public R<Void> edit(@PathVariable Long id, @RequestBody LegacyArticleBo bo) {
         // 防止修改除了allow_keys 以外的其他属性。这个可以之后先转成json，在json里删除之后再变成对象
 //        let allow_keys = ['title', 'intro', 'content', 'category', 'tags']
@@ -124,7 +130,6 @@ public class LegacyArticleFrontController extends BaseController {
 //    @Log(title = "文章", businessType = BusinessType.DELETE)
     @DeleteMapping("/remove/{ids}")
     @Operation(summary = "删除前台文章")
-    @SaIgnore
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {
         return toAjax(legacyArticleService.deleteWithValidByIds(List.of(ids), true));

@@ -1,5 +1,6 @@
 package org.dromara.web.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -11,7 +12,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.web.domain.LegacyPraise;
 import org.dromara.web.domain.LegacyUser;
-import org.dromara.web.domain.bo.LegacyUserBo;
 import org.dromara.web.mapper.LegacyPraiseMapper;
 import org.springframework.stereotype.Service;
 import org.dromara.web.domain.bo.LegacyArticleBo;
@@ -95,6 +95,24 @@ public class LegacyArticleServiceImpl implements ILegacyArticleService {
         lqw.between(params.get("beginModifiedDate") != null && params.get("endModifiedDate") != null,
             LegacyArticle::getModifiedDate ,params.get("beginModifiedDate"), params.get("endModifiedDate"));
         return lqw;
+    }
+
+
+    // 前台新增文章
+    @Override
+    public LegacyArticle insertFrontArticleByBo(LegacyArticleBo bo) {
+        LegacyArticle add = MapstructUtils.convert(bo, LegacyArticle.class);
+//        validEntityBeforeSave(add); // 数据校验
+        long loginIdAsLong = StpUtil.getLoginIdAsLong();
+        assert add != null;
+        add.setAuthor(loginIdAsLong);
+        boolean flag = baseMapper.insert(add) > 0;
+        if (flag) {
+            bo.setId(add.getId());
+            return add;
+        }else {
+            return null;
+        }
     }
 
     /**

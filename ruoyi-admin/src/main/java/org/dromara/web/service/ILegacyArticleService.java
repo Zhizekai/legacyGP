@@ -32,9 +32,8 @@ public interface ILegacyArticleService {
      */
     List<LegacyArticleVo> queryList(LegacyArticleBo bo);
 
-    /**
-     * 新增文章
-     */
+    // 前台新增文章
+    LegacyArticle insertFrontArticleByBo(LegacyArticleBo bo);
     Boolean insertByBo(LegacyArticleBo bo);
 
     /**
