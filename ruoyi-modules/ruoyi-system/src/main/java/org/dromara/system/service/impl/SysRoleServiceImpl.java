@@ -464,11 +464,14 @@ public class SysRoleServiceImpl implements ISysRoleService {
         if (num == 0) {
             return;
         }
+
+        // 获取所有在线的user的key
         List<String> keys = StpUtil.searchTokenValue("", 0, -1, false);
         if (CollUtil.isEmpty(keys)) {
             return;
         }
         // 角色关联的在线用户量过大会导致redis阻塞卡顿 谨慎操作
+        // 遍历所有用户，把所有在线的用户都踢下去
         keys.parallelStream().forEach(key -> {
             String token = StringUtils.substringAfterLast(key, ":");
             // 如果已经过期则跳过
@@ -476,12 +479,18 @@ public class SysRoleServiceImpl implements ISysRoleService {
                 return;
             }
             LoginUser loginUser = LoginHelper.getLoginUser(token);
-            if (loginUser.getRoles().stream().anyMatch(r -> r.getRoleId().equals(roleId))) {
-                try {
-                    StpUtil.logoutByTokenValue(token);
-                } catch (NotLoginException ignored) {
+            System.out.println(loginUser);
+            if (loginUser != null) {
+                // 搜索所有和roleId相同的user对象
+                if (loginUser.getRoles().stream().anyMatch(r -> r.getRoleId().equals(roleId))) {
+                    try {
+                        // 踢用户下线
+                        StpUtil.logoutByTokenValue(token);
+                    } catch (NotLoginException ignored) {
+                    }
                 }
             }
+
         });
     }
 }
