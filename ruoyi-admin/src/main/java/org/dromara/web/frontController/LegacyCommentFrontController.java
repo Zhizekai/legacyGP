@@ -101,6 +101,10 @@ public class LegacyCommentFrontController extends BaseController {
     @Operation(summary = "新增前台评论")
     public R<Void> add( @RequestBody LegacyCommentBo bo) {
 
+        long loginIdAsLong = StpUtil.getLoginIdAsLong();
+        bo.setCreateBy(loginIdAsLong);
+
+
         Boolean aBoolean = legacyCommentService.insertByBo(bo);
         if (aBoolean) {
             LegacyMessageBo legacyMessageBo = new LegacyMessageBo();

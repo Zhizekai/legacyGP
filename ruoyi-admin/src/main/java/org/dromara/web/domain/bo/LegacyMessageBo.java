@@ -53,6 +53,9 @@ public class LegacyMessageBo extends FrontBaseEntity {
     @NotNull(message = "0: 未读，1: 已读不能为空", groups = { AddGroup.class, EditGroup.class })
     private Integer status;
 
+    @NotNull(message = "创建用户不能为空")
+    private Integer createBy;
+
     /**
      * 创建时间
      */

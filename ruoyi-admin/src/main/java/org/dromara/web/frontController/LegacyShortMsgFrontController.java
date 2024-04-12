@@ -50,11 +50,13 @@ public class LegacyShortMsgFrontController extends BaseController {
     @GetMapping("/lists")
     public TableDataInfo<LegacyShortmsgVo> list(LegacyShortmsgBo bo, PageQuery pageQuery) {
 
-        // TODO 这里建议前端直接把userId 放到createdBy里面
+        long loginIdAsLong = StpUtil.getLoginIdAsLong();
+        bo.setCreatedBy(loginIdAsLong);
+
         TableDataInfo<LegacyShortmsgVo> legacyShortmsgVoTableDataInfo = legacyShortMsgService.queryPageList(bo, pageQuery);
         for ( LegacyShortmsgVo vo : legacyShortmsgVoTableDataInfo.getRows()) {
             String images = vo.getImages();
-            if (images != null) {
+            if (images != null && !images.equals("")) {
                 vo.setImgList( Arrays.asList(images.split(",")));
             }
         }
@@ -80,8 +82,11 @@ public class LegacyShortMsgFrontController extends BaseController {
         bo.setCreatedBy(loginIdAsLong);
 
         // 把图片数组变成字符串
-        String a1 = Joiner.on(",").join(bo.getImageBoList());
-        bo.setImages(a1);
+        if (bo.getImageBoList() != null) {
+            String a1 = Joiner.on(",").join(bo.getImageBoList());
+            bo.setImages(a1);
+        }
+
 
         // 这里建议前端直接把userId 放到createdBy里面
         return toAjax(legacyShortMsgService.insertByBo(bo));

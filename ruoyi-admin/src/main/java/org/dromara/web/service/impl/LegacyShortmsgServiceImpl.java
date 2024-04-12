@@ -67,6 +67,7 @@ public class LegacyShortmsgServiceImpl implements ILegacyShortmsgService {
         MPJLambdaWrapper<LegacyShortmsg> lqw = new MPJLambdaWrapper<>();
         lqw.eq(StringUtils.isNotBlank(bo.getContent()), LegacyShortmsg::getContent, bo.getContent());
         lqw.eq(StringUtils.isNotBlank(bo.getSmGroup()), LegacyShortmsg::getSmGroup, bo.getSmGroup());
+        lqw.eq(bo.getCreatedBy() != null, LegacyShortmsg::getCreatedBy, bo.getCreatedBy());
         lqw.between(params.get("beginCreateDate") != null && params.get("endCreateDate") != null,
             LegacyShortmsg::getCreateDate ,params.get("beginCreateDate"), params.get("endCreateDate"));
         lqw.between(params.get("beginModifiedDate") != null && params.get("endModifiedDate") != null,

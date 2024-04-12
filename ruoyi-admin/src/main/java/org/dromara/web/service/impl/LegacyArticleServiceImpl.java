@@ -63,10 +63,6 @@ public class LegacyArticleServiceImpl implements ILegacyArticleService {
     @Override
     public TableDataInfo<LegacyArticleVo> queryPageList(LegacyArticleBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<LegacyArticle> lqw = buildQueryWrapper(bo);
-        System.out.println(
-            lqw.getSqlSelect()
-        );
-
         Page<LegacyArticleVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         return TableDataInfo.build(result);
     }
@@ -83,7 +79,7 @@ public class LegacyArticleServiceImpl implements ILegacyArticleService {
     private LambdaQueryWrapper<LegacyArticle> buildQueryWrapper(LegacyArticleBo bo) {
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<LegacyArticle> lqw = Wrappers.lambdaQuery();
-        lqw.eq(StringUtils.isNotBlank(bo.getTitle()), LegacyArticle::getTitle, bo.getTitle());
+        lqw.like(StringUtils.isNotBlank(bo.getTitle()), LegacyArticle::getTitle, bo.getTitle());
         lqw.eq(StringUtils.isNotBlank(bo.getIntroduction()), LegacyArticle::getIntroduction, bo.getIntroduction());
         lqw.eq(StringUtils.isNotBlank(bo.getContent()), LegacyArticle::getContent, bo.getContent());
         lqw.eq(StringUtils.isNotBlank(bo.getCategory()), LegacyArticle::getCategory, bo.getCategory());
