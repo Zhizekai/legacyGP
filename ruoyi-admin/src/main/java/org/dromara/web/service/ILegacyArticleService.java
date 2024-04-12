@@ -27,6 +27,9 @@ public interface ILegacyArticleService {
      */
     TableDataInfo<LegacyArticleVo> queryPageList(LegacyArticleBo bo, PageQuery pageQuery);
 
+
+    TableDataInfo<LegacyArticleVo> queryPraiseArticleList(Long userId,PageQuery pageQuery);
+
     /**
      * 查询文章列表
      */

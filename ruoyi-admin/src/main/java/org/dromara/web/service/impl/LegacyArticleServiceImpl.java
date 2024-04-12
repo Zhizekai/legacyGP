@@ -1,6 +1,7 @@
 package org.dromara.web.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -40,7 +41,7 @@ public class LegacyArticleServiceImpl implements ILegacyArticleService {
 
     // 获取文章详细信息
     @Override
-    public LegacyArticleVo queryById(Long id){
+    public LegacyArticleVo queryById(Long id) {
         // 文章要和作者进行关联
         MPJLambdaWrapper<LegacyArticle> mpjLambdaWrapper = new MPJLambdaWrapper<>();
         mpjLambdaWrapper
@@ -67,6 +68,16 @@ public class LegacyArticleServiceImpl implements ILegacyArticleService {
         return TableDataInfo.build(result);
     }
 
+
+    // 获取用户收藏的文章列表
+    @Override
+    public TableDataInfo<LegacyArticleVo> queryPraiseArticleList(Long userId, PageQuery pageQuery) {
+        QueryWrapper<LegacyArticle> wrapper = new QueryWrapper<>();
+        wrapper.inSql("id", "SELECT id FROM legacy_praise WHERE legacy_praise.target_type = 1 and legacy_praise.create_by = " + userId);
+        Page<LegacyArticleVo> result = baseMapper.selectVoPage(pageQuery.build(), wrapper);
+        return TableDataInfo.build(result);
+    }
+
     /**
      * 查询文章列表
      */
@@ -87,9 +98,9 @@ public class LegacyArticleServiceImpl implements ILegacyArticleService {
         lqw.eq(bo.getPageView() != null, LegacyArticle::getPageView, bo.getPageView());
         lqw.eq(bo.getAuthor() != null, LegacyArticle::getAuthor, bo.getAuthor());
         lqw.between(params.get("beginCreateDate") != null && params.get("endCreateDate") != null,
-            LegacyArticle::getCreateDate ,params.get("beginCreateDate"), params.get("endCreateDate"));
+            LegacyArticle::getCreateDate, params.get("beginCreateDate"), params.get("endCreateDate"));
         lqw.between(params.get("beginModifiedDate") != null && params.get("endModifiedDate") != null,
-            LegacyArticle::getModifiedDate ,params.get("beginModifiedDate"), params.get("endModifiedDate"));
+            LegacyArticle::getModifiedDate, params.get("beginModifiedDate"), params.get("endModifiedDate"));
         return lqw;
     }
 
@@ -106,7 +117,7 @@ public class LegacyArticleServiceImpl implements ILegacyArticleService {
         if (flag) {
             bo.setId(add.getId());
             return add;
-        }else {
+        } else {
             return null;
         }
     }
@@ -138,7 +149,7 @@ public class LegacyArticleServiceImpl implements ILegacyArticleService {
     /**
      * 保存前的数据校验
      */
-    private void validEntityBeforeSave(LegacyArticle entity){
+    private void validEntityBeforeSave(LegacyArticle entity) {
         //TODO 做一些数据校验,如唯一约束
     }
 
@@ -147,7 +158,7 @@ public class LegacyArticleServiceImpl implements ILegacyArticleService {
      */
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
-        if(isValid){
+        if (isValid) {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;

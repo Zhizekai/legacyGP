@@ -2,6 +2,7 @@ package org.dromara.web.frontController;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.dev33.satoken.stp.StpUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -50,9 +51,15 @@ public class LegacyArticleFrontController extends BaseController {
 //    @SaCheckPermission("system:article:list")
     @GetMapping("/list")
     @Operation(summary = "获取前台文章列表")
-
     public TableDataInfo<LegacyArticleVo> list(LegacyArticleBo bo, PageQuery pageQuery) {
         return legacyArticleService.queryPageList(bo, pageQuery);
+    }
+
+    @GetMapping("/getPraiseArticleList")
+    @Operation(summary = "获取收藏的前台文章列表")
+    public TableDataInfo<LegacyArticleVo> getPraiseArticleList(PageQuery pageQuery) {
+        long loginIdAsLong = StpUtil.getLoginIdAsLong();
+        return legacyArticleService.queryPraiseArticleList(loginIdAsLong, pageQuery);
     }
 
     /**

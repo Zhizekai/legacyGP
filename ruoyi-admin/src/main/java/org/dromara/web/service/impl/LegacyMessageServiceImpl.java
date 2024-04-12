@@ -79,16 +79,31 @@ public class LegacyMessageServiceImpl implements ILegacyMessageService {
         // 我怀疑Wrappers也是框架作者从mp核心代码中拿出来的，这个玩意mp对外api也没有写
         QueryWrapper<LegacyMessage> lqw1 = new  QueryWrapper<>();
         System.out.println(userId);
-        lqw1.select("count(*) as num")
+        lqw1.select("count(*) as num,user_id,type")
             .eq(userId != null, "user_id", userId)
             .eq("status", 0)
             .groupBy("type");
         List<Map<String, Object>> aLong = baseMapper.selectMaps(lqw1);
+        // TODO 统计函数需要优化
         System.out.println(aLong);
         Map<String, Long> map = new HashMap<String, Long>();
-        map.put("comment", (Long) aLong.get(0).get("num"));
-        map.put("praise",  (Long) aLong.get(1).get("num"));
-        map.put("follow",  (Long) aLong.get(2).get("num"));
+
+        map.put("comment",Long.parseLong("0"));
+        map.put("praise",  Long.parseLong("0"));
+        map.put("follow", Long.parseLong("0"));
+        map.put("total", Long.parseLong("0"));
+        for (Map<String, Object> a : aLong) {
+            if ((Integer)a.get("type") == 1) {
+                map.put("comment", (Long) a.get("num"));
+            }
+            if ((Integer)a.get("type") == 2) {
+                map.put("praise", (Long) a.get("num"));
+            }
+            if ((Integer)a.get("type") == 3) {
+                map.put("follow", (Long) a.get("num"));
+            }
+        }
+        map.put("total", map.get("comment")+map.get("praise")+map.get("follow"));
 
         return map;
     }
