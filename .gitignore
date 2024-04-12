@@ -19,11 +19,13 @@ target/
 .settings
 .springBeans
 
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
 *.ipr
+
 
 ### JRebel ###
 rebel.xml
@@ -40,6 +42,7 @@ nbdist/
 *.log
 *.xml.versionsBackup
 *.swp
+*.yml
 
 !*/build/*.java
 !*/build/*.html
