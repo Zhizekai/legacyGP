@@ -98,12 +98,18 @@ public class LegacyArticleFrontController extends BaseController {
     // 发布文章
     @PostMapping("/publish/{id}")
     @Operation(summary = "发布前台文章")
-    public R<String> publishArticle(@PathVariable Long id, Long author) {
-        LegacyArticleVo legacyArticleVo = legacyArticleService.queryById(id);
-        legacyArticleVo.setStatus(1);
-        legacyArticleVo.setAuthor(author);
-        LegacyArticleBo legacyArticleBo = MapstructUtils.convert(legacyArticleVo, LegacyArticleBo.class);
-        if (legacyArticleService.updateByBo(legacyArticleBo)) {
+    public R<String> publishArticle(@PathVariable Long id,@RequestBody LegacyArticleBo bo) {
+
+//        LegacyArticleVo legacyArticleVo = legacyArticleService.queryById(id);
+//        legacyArticleVo.setStatus(1);
+//        legacyArticleVo.setAuthor(author);
+
+        long loginIdAsLong = StpUtil.getLoginIdAsLong();
+        bo.setId(id);
+        bo.setStatus(1);
+        bo.setAuthor(loginIdAsLong);
+//        LegacyArticleBo legacyArticleBo = MapstructUtils.convert(legacyArticleVo, LegacyArticleBo.class);
+        if (legacyArticleService.updateByBo(bo)) {
             return R.ok("发布成功");
         }else {
             return R.fail("文档没找到，发布失败");
