@@ -106,8 +106,6 @@ public class LegacyUserFrontController extends BaseController {
         } else {
             return R.fail(20002, "请先注册");
         }
-
-
     }
 
     /**

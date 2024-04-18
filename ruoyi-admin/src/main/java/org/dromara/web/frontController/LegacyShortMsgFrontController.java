@@ -63,9 +63,7 @@ public class LegacyShortMsgFrontController extends BaseController {
         return legacyShortmsgVoTableDataInfo;
     }
 
-
     // 获取短消息详细信息
-
     @GetMapping("/{id}")
     public R<LegacyShortmsgVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long id) {

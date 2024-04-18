@@ -82,4 +82,7 @@ public class LegacyArticleBo extends FrontBaseEntity {
     private Date modifiedDate;
 
 
+
+    // 文章封面
+    private String cover;
 }

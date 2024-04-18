@@ -109,6 +109,7 @@ public class LegacyArticleFrontController extends BaseController {
         bo.setStatus(1);
         bo.setAuthor(loginIdAsLong);
 //        LegacyArticleBo legacyArticleBo = MapstructUtils.convert(legacyArticleVo, LegacyArticleBo.class);
+
         if (legacyArticleService.updateByBo(bo)) {
             return R.ok("发布成功");
         }else {
