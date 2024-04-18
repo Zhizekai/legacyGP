@@ -46,7 +46,6 @@ public class LegacyMessageFrontController extends BaseController {
     private final ILegacyMessageService legacyMessageService;
 
     // 查询消息列表
-
     @GetMapping("/list")
     @Operation(summary = "获取前台站内消息列表")
     public TableDataInfo<LegacyMessageVo> list(LegacyMessageBo bo, PageQuery pageQuery) {

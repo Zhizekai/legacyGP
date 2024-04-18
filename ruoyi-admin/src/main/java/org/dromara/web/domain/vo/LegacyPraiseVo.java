@@ -78,4 +78,8 @@ public class LegacyPraiseVo implements Serializable {
 
     private LegacyUser legacyUser;
 
+
+    // 是否已读（0: 未读，1: 已读）
+    private Integer readStatus;
+
 }

@@ -66,4 +66,8 @@ public class LegacyPraiseBo extends FrontBaseEntity {
     private Date modifiedDate;
 
     private Long createBy;
+
+
+    // 是否已读（0: 未读，1: 已读）
+    private Integer readStatus;
 }

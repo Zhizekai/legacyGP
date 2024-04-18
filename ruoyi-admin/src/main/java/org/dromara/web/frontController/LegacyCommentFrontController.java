@@ -67,13 +67,12 @@ public class LegacyCommentFrontController extends BaseController {
 
 
     @GetMapping("/myList")
-    @Operation(summary = "获取我的的评论列表")
-
+    @Operation(summary = "获取我的评论列表")
     public TableDataInfo<LegacyCommentVo> getCommentsByUserId(PageQuery pageQuery) {
-
         long loginIdAsLong = StpUtil.getLoginIdAsLong();
         LegacyCommentBo legacyCommentBo = new LegacyCommentBo();
         legacyCommentBo.setTargetUser(loginIdAsLong);
+        legacyCommentBo.setSourceType(2);
         return legacyCommentService.queryPageList(legacyCommentBo, pageQuery);
 
     }
