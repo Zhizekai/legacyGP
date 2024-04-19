@@ -1,9 +1,15 @@
 package org.dromara.web.service;
 
+import org.dromara.web.domain.bo.LegacyCommentBo;
+import org.dromara.web.domain.bo.LegacyFollowBo;
+import org.dromara.web.domain.bo.LegacyPraiseBo;
+import org.dromara.web.domain.vo.LegacyCommentVo;
+import org.dromara.web.domain.vo.LegacyFollowVo;
 import org.dromara.web.domain.vo.LegacyMessageVo;
 import org.dromara.web.domain.bo.LegacyMessageBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
+import org.dromara.web.domain.vo.LegacyPraiseVo;
 
 import java.util.Collection;
 import java.util.List;
@@ -50,4 +56,17 @@ public interface ILegacyMessageService {
      * 校验并批量删除消息信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+
+    // 已读评论消息
+    LegacyCommentVo readCommentMessage(LegacyCommentBo bo);
+
+
+    // 已读点赞消息
+    LegacyPraiseVo readPraiseMessage(LegacyPraiseBo bo);
+
+    // 已读关注消息
+    LegacyFollowVo readFollowMessage(LegacyFollowBo bo);
+
+
 }

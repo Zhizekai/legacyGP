@@ -53,5 +53,7 @@ public class LegacyFollowBo extends FrontBaseEntity {
     @NotNull(message = "修改时间不能为空", groups = { AddGroup.class, EditGroup.class })
     private Date modifiedDate;
 
+    // 是否已读（0: 未读，1: 已读）
+    private Integer readStatus;
 
 }

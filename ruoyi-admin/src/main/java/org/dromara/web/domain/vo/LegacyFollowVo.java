@@ -64,4 +64,9 @@ public class LegacyFollowVo implements Serializable {
     // 粉丝用户信息
     private LegacyUser legacyUser;
 
+
+
+    // 是否已读（0: 未读，1: 已读）
+    private Integer readStatus;
+
 }

@@ -50,6 +50,8 @@ public class LegacyPraiseServiceImpl implements ILegacyPraiseService {
     public TableDataInfo<LegacyPraiseVo> queryPageList(LegacyPraiseBo bo, PageQuery pageQuery) {
         MPJLambdaWrapper<LegacyPraise> wrapper = new MPJLambdaWrapper<>();
         wrapper.selectAll(LegacyPraise.class)
+            .eq(bo.getTargetId() != null, LegacyPraise::getTargetId, bo.getTargetId())
+            .eq(bo.getTargetUser() != null, LegacyPraise::getTargetUser, bo.getTargetUser())
             .selectAssociation(LegacyUser.class, LegacyPraiseVo::getLegacyUser)
             .leftJoin(LegacyUser.class, LegacyUser::getId, LegacyPraise::getCreateBy);
         Page<LegacyPraiseVo> result = baseMapper.selectJoinPage(pageQuery.build(), LegacyPraiseVo.class, wrapper);

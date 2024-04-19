@@ -47,8 +47,27 @@ public class LegacyShortMsgFrontController extends BaseController {
 
     // 查询短消息列表
 
+
+
     @GetMapping("/lists")
     public TableDataInfo<LegacyShortmsgVo> list(LegacyShortmsgBo bo, PageQuery pageQuery) {
+
+//        long loginIdAsLong = StpUtil.getLoginIdAsLong();
+//        bo.setCreatedBy(loginIdAsLong);
+
+        TableDataInfo<LegacyShortmsgVo> legacyShortmsgVoTableDataInfo = legacyShortMsgService.queryPageList(bo, pageQuery);
+        for ( LegacyShortmsgVo vo : legacyShortmsgVoTableDataInfo.getRows()) {
+            String images = vo.getImages();
+            if (images != null && !images.equals("")) {
+                vo.setImgList( Arrays.asList(images.split(",")));
+            }
+        }
+        return legacyShortmsgVoTableDataInfo;
+    }
+
+
+    @GetMapping("/myLists")
+    public TableDataInfo<LegacyShortmsgVo> getMyShortMessageList(LegacyShortmsgBo bo, PageQuery pageQuery) {
 
         long loginIdAsLong = StpUtil.getLoginIdAsLong();
         bo.setCreatedBy(loginIdAsLong);

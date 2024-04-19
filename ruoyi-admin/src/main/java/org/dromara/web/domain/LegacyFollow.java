@@ -51,4 +51,7 @@ public class LegacyFollow extends FrontBaseEntity {
     private Date modifiedDate;
 
 
+    // 是否已读（0: 未读，1: 已读）
+    private Integer readStatus;
+
 }
